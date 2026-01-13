@@ -1,4 +1,4 @@
-# A vaga vai chegar
+## A vaga vai chegar
   
 ![alt text](readme_images/video.gif)  
   
@@ -14,12 +14,24 @@ configure o options.json como desejar.
 ![alt text](readme_images/image.png)  
   
 após rigorosos testes obtive esse problema, então adicionei um sleep de 30 segundos entre candidaturas configuravel.  
-Por favor, não exite em colaborar com o projeto ou abrir uma issue. 
+Por favor, não hesite em colaborar com o projeto ou abrir uma issue. 
 Deixe sua STAR como forma de agradecimento 👍 
   
 observação: o driver deve ficar focado para melhor funcionamento, acredito que ocorrem falhas se ficar minimizado mas não testei.
 
-# Requirements
+
+
+### ☕ Apoie o Projeto
+
+| Rede | Ícone | Endereço |
+| :--- | :---: | :--- |
+| **Bitcoin** | <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/btc.png" width="20"> | `bc1qg6ava2w08d5k2588edylj08ux4yuhn74yygsnr` |
+| **Ethereum** | <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/eth.png" width="20"> | `0xcD36cf511646bD39Cb23f425786a4f3699CcFD2a` |
+| **Solana** | <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/sol.png" width="20"> | `FKotLMzTKNbdZcKXkXsPuP1hcXGiXfScjB7qvSCQAev2` |
+| **BNB Chain** | <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/bnb.png" width="20"> | `0xcD36cf511646bD39Cb23f425786a4f3699CcFD2a` |
+| **TRON** | <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/trx.png" width="20"> | `TWhZLJ61uY1bo8zicwhnfS5NKuuD6BJ8D8` |
+
+### Requirements
   
 - google chrome instalado
 - Ollama instalado
@@ -29,7 +41,7 @@ observação: o driver deve ficar focado para melhor funcionamento, acredito que
 - python main.py
 
 
-# TODO
+### TODO
 
 - a parte de preencher input é suscetível a falhas, é preciso refino. Não encontrei uma maneira de descobrir oque o field espera (numeric or string)
 - quebrar a função principal, fiz tudo corrido e ficou essa bagunça.
