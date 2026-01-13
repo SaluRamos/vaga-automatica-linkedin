@@ -166,12 +166,6 @@ def subscribe_to_all_jobs():
 
         #se inscreve em todos os jobs
         for job in jobs:
-            try:
-                close_btn = WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button[data-test-modal-close-btn]")))
-                click_element(close_btn)
-            except Exception as e:
-                pass
-
             print("------------------------------")
             print(f"ACTUAL JOB {actual_job}, SUBMITED JOBS {submited_jobs}")
             click_element(job)
