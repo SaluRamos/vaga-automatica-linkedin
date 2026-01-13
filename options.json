@@ -18,11 +18,13 @@
         "height":1200,
         "width":700
     },
-    "required":{
+    "filters":{
+        "apply_to_english_vacancy":true,
+        "apply_to_portuguese_vacancy":true,
+
         "keyword":"backend",
-        "sleep_time_between_applications":"30"
-    },
-    "optional":{
+        "sleep_time_between_applications":30,
+
         "use_job_model":true,
         "filter_remote_job":true,
         "filter_hibrid_job":false,

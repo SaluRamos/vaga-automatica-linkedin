@@ -214,8 +214,15 @@ def subscribe_to_all_jobs():
                 is_portuguese = True
             print(f"details_lang = '{details_lang}'")
             print("---TERMINOU DE OBTER DADOS---")
+            # lógica para se deve ou não candidatar
+            must_apply = False
+            if is_simplified:
+                if opt["filters"]["apply_to_english_vacancy"] and is_english:
+                    must_apply = True
+                if opt["filters"]["apply_to_portuguese_vacancy"] and is_portuguese:
+                    must_apply = True
             #inscrever no job
-            if is_simplified and (is_english or is_portuguese):
+            if must_apply:
                 driver.execute_script("arguments[0].click();", subscribe_btn)
                 time.sleep(3)
                 actual_apply_page = 1
@@ -259,7 +266,8 @@ def subscribe_to_all_jobs():
                 print("IGNORANDO JOB, NÃO É SIMPLIFICADO ou NÃO É PORTUGUES/INGLÊS")
             submited_jobs = submited_jobs + 1
             actual_job = actual_job + 1
-            time.sleep(opt["required"]["sleep_time_between_applications"])
+            print(f'ESPERANDO {opt["filters"]["sleep_time_between_applications"]} segundos até candidatar-se a próxima vaga')
+            time.sleep(opt["filters"]["sleep_time_between_applications"])
         #encontra o botão de próxima página e pressiona, se não encontrar quebra o loop
         try:
             next_page = driver.find_element(By.XPATH, '//*[@aria-label="Ver próxima página"]')
@@ -270,7 +278,7 @@ def subscribe_to_all_jobs():
         except Exception as e:
             logging.error("Falha ao avançar página", exc_info=True)
             break
-    print("INSCRIÇÕES FINALIZADAS")
+    print("CANDIDATURAS FINALIZADAS")
 
 def answer_questions(details_lang:str) -> None:
     global driver
@@ -405,23 +413,23 @@ if __name__ == "__main__":
     print("IS LOGGED!")
 
     params = []
-    params.append(keyword_param(opt["required"]["keyword"]))
-    if opt["optional"]["use_job_model"]:
-        params.append(remote_param(opt["optional"]["filter_remote_job"], opt["optional"]["filter_hibrid_job"], opt["optional"]["filter_onsite_job"]))
-    if opt["optional"]["use_timelapse"]:
+    params.append(keyword_param(opt["filters"]["keyword"]))
+    if opt["filters"]["use_job_model"]:
+        params.append(remote_param(opt["filters"]["filter_remote_job"], opt["filters"]["filter_hibrid_job"], opt["filters"]["filter_onsite_job"]))
+    if opt["filters"]["use_timelapse"]:
         params.append(timelapse_param(604800))
-    if opt["optional"]["use_geoid"]:
-        params.append(geoid_param(opt["optional"]["geoid"]))
-    if opt["optional"]["use_max_distance"]:
-        params.append(distance_param(opt["optional"]["max_distance_in_miles"]))
-    if opt["optional"]["in_my_chain"]:
+    if opt["filters"]["use_geoid"]:
+        params.append(geoid_param(opt["filters"]["geoid"]))
+    if opt["filters"]["use_max_distance"]:
+        params.append(distance_param(opt["filters"]["max_distance_in_miles"]))
+    if opt["filters"]["in_my_chain"]:
         params.append(in_my_chain_param())
-    if opt["optional"]["low_candidates"]:
+    if opt["filters"]["low_candidates"]:
         params.append(low_candidates_param())
-    if opt["optional"]["use_experience_level"]:
+    if opt["filters"]["use_experience_level"]:
         params.append(experience_level_param(
-            opt["optional"]["internship"], opt["optional"]["assistent"], opt["optional"]["junior"], 
-            opt["optional"]["pleno_and_senior"], opt["optional"]["director"], opt["optional"]["executive"]
+            opt["filters"]["internship"], opt["filters"]["assistent"], opt["filters"]["junior"], 
+            opt["filters"]["pleno_and_senior"], opt["filters"]["director"], opt["filters"]["executive"]
         ))
     # Parâmetros fixos/obrigatórios
     params.extend([
