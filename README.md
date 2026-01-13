@@ -19,7 +19,8 @@ após rigorosos testes obtive esse problema, então adicionei um sleep de 30 seg
   
 ![alt text](readme_images/image2.png)  
   
-Existe um limite diário de candidaturas que podem ser enviadas.  
+Existe um limite de candidaturas que podem ser enviadas.  
+Aparentemente 100 candidaturas por semana.  
   
 ### ☕ Apoie o Projeto
 
