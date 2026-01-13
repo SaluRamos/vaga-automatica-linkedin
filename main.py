@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 from langdetect import detect
 import time
 import os
@@ -13,6 +14,7 @@ import logging
 from enum import Enum
 
 driver = None
+actions = None
 job_url = "https://www.linkedin.com/jobs/search/?"
 is_premium = True
 opt = {}
@@ -38,7 +40,7 @@ def get_url_params() -> dict:
         args[name] = buffer[1]
     return args
 
-def get_actual_job_id():
+def get_actual_job_id() -> str:
     return get_url_params()["currentJobId"]
 
 def answer_linkedin_question(question:str, language:str, input_type:InputType, options_list:list=[]) -> str:
@@ -62,6 +64,11 @@ def answer_linkedin_question(question:str, language:str, input_type:InputType, o
         return response['message']['content']
     except Exception as e:
         return f"Erro ao chamar o Ollama: {e}"
+
+def click_element(elem) -> None:
+    global actions
+    # driver.execute_script("arguments[0].click();", elem) #isso é facilmente detectado
+    actions.move_to_element(elem).click().perform()
 
 # URL PARAMS
 
@@ -161,13 +168,13 @@ def subscribe_to_all_jobs():
         for job in jobs:
             try:
                 close_btn = WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button[data-test-modal-close-btn]")))
-                driver.execute_script("arguments[0].click();", close_btn)
+                click_element(close_btn)
             except Exception as e:
                 pass
 
             print("------------------------------")
             print(f"ACTUAL JOB {actual_job}, SUBMITED JOBS {submited_jobs}")
-            driver.execute_script("arguments[0].click();", job)
+            click_element(job)
             time.sleep(2) #espera carregar infos
             #verificar se já candidatou
             try:
@@ -223,7 +230,7 @@ def subscribe_to_all_jobs():
                     must_apply = True
             #inscrever no job
             if must_apply:
-                driver.execute_script("arguments[0].click();", subscribe_btn)
+                click_element(subscribe_btn)
                 time.sleep(3)
                 actual_apply_page = 1
                 has_progress_bar = True
@@ -241,23 +248,23 @@ def subscribe_to_all_jobs():
                         select_resume(is_portuguese, is_english)
                     try:
                         subscribe_next = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@aria-label="Avançar para próxima etapa"]')))
-                        driver.execute_script("arguments[0].click();", subscribe_next)
+                        click_element(subscribe_next)
                         print("NEXT PAGE")
                         actual_apply_page = actual_apply_page + 1
                         time.sleep(0.5)
                     except Exception as e:
                         if has_progress_bar:
                             review = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@aria-label="Revise sua candidatura"]')))
-                            driver.execute_script("arguments[0].click();", review)
+                            click_element(review)
                             print("REVISANDO CANDIDATURA")
                             time.sleep(0.5)
                         send = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@aria-label="Enviar candidatura"]')))
-                        driver.execute_script("arguments[0].click();", send)
+                        click_element(send)
                         print("FINALIZANDO")
                         time.sleep(2)
                         try:
                             close_btn = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button[data-test-modal-close-btn]")))
-                            driver.execute_script("arguments[0].click();", close_btn)
+                            click_element(close_btn)
                         except Exception as e:
                             pass
                         print("CONCLUIDO")
@@ -271,7 +278,7 @@ def subscribe_to_all_jobs():
         #encontra o botão de próxima página e pressiona, se não encontrar quebra o loop
         try:
             next_page = driver.find_element(By.XPATH, '//*[@aria-label="Ver próxima página"]')
-            driver.execute_script("arguments[0].click();", next_page)
+            click_element(next_page)
             actual_page = actual_page + 1
             print("------------------------------")
             print(f"AVANÇANDO PARA A PÁGINA {actual_page}")
@@ -352,10 +359,10 @@ def answer_questions(details_lang:str) -> None:
             clean_answer = answer.strip().replace(".", "").lower()
             print(f"CLEAN ANSWER: '{clean_answer}'")
             if clean_answer in options_map:
-                driver.execute_script("arguments[0].click();", options_map[clean_answer])
+                click_element(options_map[clean_answer])
             else:
                 print("erro na resposta da ia, selecionando index 0")
-                driver.execute_script("arguments[0].click();", labels[0])
+                click_element(labels[0])
     except Exception as e:
         pass
 
@@ -368,12 +375,12 @@ def select_resume(is_portuguese:bool, is_english:bool) -> None:
             if is_portuguese and "PORTUGUES" in resume.text:
                 print("SELECTED PORTUGUESE RESUME")
                 if "Selecionado" not in resume.get_attribute("aria-label"):
-                    driver.execute_script("arguments[0].click();", resume)
+                    click_element(resume)
                 break
             if is_english and "INGLES" in resume.text:
                 print("SELECTED ENGLISH RESUME")
                 if "Selecionado" not in resume.get_attribute("aria-label"):
-                    driver.execute_script("arguments[0].click();", resume)
+                    click_element(resume)
                 break
         time.sleep(0.2)
     except Exception as e:
@@ -406,6 +413,7 @@ if __name__ == "__main__":
         h = opt["driver"]["height"]
         driver.set_window_size(h, w)
 
+    actions = ActionChains(driver)
     
     is_logged = False
     while not is_logged:
