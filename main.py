@@ -263,12 +263,13 @@ def subscribe_to_all_jobs():
                             pass
                         print("CONCLUIDO")
                         break
+                #só deve esperar se efetuou uma candidatura
+                print(f'ESPERANDO {opt["filters"]["sleep_time_between_applications"]} segundos até candidatar-se a próxima vaga')
+                time.sleep(opt["filters"]["sleep_time_between_applications"])
             else:
                 print("IGNORANDO JOB, NÃO É SIMPLIFICADO ou NÃO É PORTUGUES/INGLÊS")
             submited_jobs = submited_jobs + 1
             actual_job = actual_job + 1
-            print(f'ESPERANDO {opt["filters"]["sleep_time_between_applications"]} segundos até candidatar-se a próxima vaga')
-            time.sleep(opt["filters"]["sleep_time_between_applications"])
         #encontra o botão de próxima página e pressiona, se não encontrar quebra o loop
         try:
             next_page = driver.find_element(By.XPATH, '//*[@aria-label="Ver próxima página"]')
