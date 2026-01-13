@@ -51,3 +51,4 @@ Deixe sua STAR como forma de agradecimento 👍
 - criar classe? Não acho que essa abordagem permita múltiplas instâncias.
 - suportar curriculo em espanhol
 - suporte ao site Indeed
+- suporte ao site Gupy
