@@ -9,6 +9,7 @@ import time
 import os
 import ollama
 import json
+import logging
 from enum import Enum
 
 driver = None
@@ -267,7 +268,7 @@ def subscribe_to_all_jobs():
             print("------------------------------")
             print(f"AVANÇANDO PARA A PÁGINA {actual_page}")
         except Exception as e:
-            print(e)
+            logging.error("Falha ao avançar página", exc_info=True)
             break
     print("INSCRIÇÕES FINALIZADAS")
 
@@ -368,7 +369,7 @@ def select_resume(is_portuguese:bool, is_english:bool) -> None:
                 break
         time.sleep(0.2)
     except Exception as e:
-        print(e)
+        logging.error("Falha ao selecionar curriculo", exc_info=True)
 
 if __name__ == "__main__":
     try:
@@ -437,7 +438,7 @@ if __name__ == "__main__":
     try:
         subscribe_to_all_jobs()
     except Exception as e:
-        print(e)
+        logging.error("Falha genérica sem tratamento", exc_info=True)
         time.sleep(1000000) #dar tempo de debugar
 
     driver.quit()
