@@ -1,5 +1,7 @@
 # A vaga vai chegar
   
+![alt text](readme_images/video.gif)  
+  
 Nos últimos dias meu feed foi invadido pela propaganda do vaga automatica.  
 Vi que tinham muitas reclamações no reclameaqui e não passava de uma automação selenium, então decidi fazer minha própria ferramenta.  
 Trata-se de um bot para automatizar candidatura a vagas de emprego no linkedin.  
