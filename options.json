@@ -1,0 +1,61 @@
+{
+    "private_info":{
+        "first_name":"John",
+        "last_name":"Senna",
+        "cellphone":"123456-7890",
+        "address":"Xique-Xique, Bahia, Brasil",
+        "base_years_of_experience":"5",
+        "base_salary":"15000"
+    },
+    "print": {
+        "system_prompt":false,
+        "details":false
+    },
+    "driver":{
+        "headless":false,
+        "auto_open_devtools":false,
+        "maximized":false,
+        "height":1200,
+        "width":700
+    },
+    "required":{
+        "keyword":"backend",
+        "sleep_time_between_applications":"30"
+    },
+    "optional":{
+        "use_job_model":true,
+        "filter_remote_job":true,
+        "filter_hibrid_job":false,
+        "filter_onsite_job":false,
+
+        "use_timelapse":true,
+        "max_timelapse_in_seconds":604800,
+
+        "use_geoid":false,
+        "geoid":"56057199",
+
+        "use_max_distance":false,
+        "max_distance_in_miles":"30",
+
+        "in_my_chain":false,
+
+        "low_candidates":false,
+
+        "use_experience_level":false,
+        "internship":false,
+        "assistent":false,
+        "junior":true,
+        "pleno_and_senior":true,
+        "director":false,
+        "executive":false
+    },
+    "ai":{
+        "model":"gemma3:4b",
+        "en_private_info":"My name is John Senna, my cellphone is 1234567890, i am from Xique-Xique, Bahia, Brasil.",
+        "pt_private_info":"Meu nome é John Senna, meu celular é 1234567890, sou de Xique-Xique, Bahia, Brasil.",
+        "en_numeric_prompt": "You are an agent specialized in filling LinkedIn job openings. {en_private_info}. If the question involves years of experience in a particular skill, answer 5. If it involves a preference between CLT or PJ, answer PJ. If it involves salary expectation, answer 1000. Your English level is advanced. The field almost always expects an integer.",
+        "pt_numeric_prompt": "Você é um agente especializado em preencher vagas do linkedin. {pt_private_info}. Se a pergunta envolver tempo de experiencia em determinada skill, responda 5. Se envolver preferencia entre CLT ou PJ, responda PJ. Se envolver pretensão salarial, responda 1000. Seu nível de inglês é avançado. O campo quase sempre espera por um número inteiro.",
+        "en_dropdown_prompt": "You are a LinkedIn automation agent. Your task is to answer a multiple-choice question. Your task is to choose one of the options from a dropdown menu HTML <select>. The available options are: {options_list}. Your english level are advanced, not native. Your response MUST be EXACTLY one of the options listed above. Do not provide any explanations, thoughts, or extra characters.",
+        "pt_dropdown_prompt": "Você é um agente de automação do LinkedIn. Sua tarefa é responder a uma pergunta de múltipla escolha. Sua tarefa é escolher uma das opções de um menu suspenso HTML <select>. As opções disponíveis são: {options_list}. Seu nível de inglês é avançado. Sua resposta DEVE ser EXATAMENTE uma das opções listadas acima. Não forneça explicações, pensamentos ou caracteres extras."
+    }
+}

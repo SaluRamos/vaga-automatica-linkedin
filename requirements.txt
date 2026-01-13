@@ -1,0 +1,5 @@
+undetected-chromedriver
+langdetect
+langid
+ollama
+setuptools>=60.0.0; python_version >= "3.12"
