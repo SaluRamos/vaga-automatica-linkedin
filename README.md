@@ -50,7 +50,7 @@ Deixe sua STAR como forma de agradecimento 👍
 ### Erros comuns
   
 Se você estiver obtendo o erro  
-![alt text](readme_images/image3.png)
+![alt text](readme_images/image3.png)  
 rode o arquivo **fix_issue.bat** e tente reiniciar o computador.  
     
 ### TODO
