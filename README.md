@@ -43,7 +43,7 @@ Deixe sua STAR como forma de agradecimento 👍
 - opcional: crie uma venv
 - crie a pasta **bin** na raiz do projeto
 - Baixe o [chrome for testing](https://googlechromelabs.github.io/chrome-for-testing/#stable) **win64** e extraia para a pasta bin
-- a versão do **chrome for testing** e do **undetected chromedriver** devem ser idênticas. Você pode verificar a versão do **undetected chromedriver** em **"%AppData%\Roaming\undetected_chromedriver\undetected_chromedriver.exe"** abrindo as propriedades do executável e visualizando a aba 'detalhes'
+- a versão do **chrome for testing** e do **undetected chromedriver** devem ser idênticas. Você pode verificar a versão do **undetected chromedriver** em **"%AppData%\undetected_chromedriver\undetected_chromedriver.exe"** abrindo as propriedades do executável e visualizando a aba 'detalhes'
 - rode o comando ```pip install -r requirements.txt``` para instalar dependências
 - abra o terminal na raiz do projeto e rode o comando ```python main.py```
 
