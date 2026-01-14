@@ -75,7 +75,9 @@ def click_element(elem) -> None:
 
 def verify_login() -> bool:
     global driver
-    driver.get("https://www.linkedin.com") #se estiver logado, deve ser redirecionado para o feed
+    #se estiver logado, deve ser redirecionado para o feed
+    if driver.current_url != "https://www.linkedin.com/":
+        driver.get("https://www.linkedin.com") 
     time.sleep(1)
     if "/feed" in driver.current_url:
         return True
