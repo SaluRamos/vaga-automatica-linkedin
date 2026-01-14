@@ -154,15 +154,12 @@ def subscribe_to_all_jobs() -> None:
         #encontra e scrolla o container da lista de jobs
         jobs = driver.find_elements(By.CSS_SELECTOR, "div[data-job-id]")
         print(f"jobs antes de scrolar = {len(jobs)}")
-        jobs_list = get_dad(jobs[0], 3)
-        jobs_scroll = get_dad(jobs_list)
+        jobs_scroll = get_dad(jobs[0], 4)
         scroll_element(jobs_scroll)
         jobs = driver.find_elements(By.CSS_SELECTOR, "div[data-job-id]") #encontra os jobs de novo
         print(f"jobs após scrolar = {len(jobs)}")
-
         #encontra o container das informações do job
         job_info = driver.find_element(By.CLASS_NAME, "jobs-search__job-details--wrapper")
-
         #se inscreve em todos os jobs
         for job in jobs:
             print("------------------------------")
