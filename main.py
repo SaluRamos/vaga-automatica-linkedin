@@ -65,6 +65,7 @@ def get_driver_options() -> uc.ChromeOptions:
     driver_options.add_argument("--no-pings")
     # Desativa o "Field Trials" (telemetria do Google)
     driver_options.add_argument("--disable-fext-trials")
+    # Outros
     driver_options.add_argument("--remote-debugging-port=9222")
     driver_options.add_argument(f"--user-data-dir={get_profile_path()}")
     if opt["driver"]["headless"]:
@@ -115,22 +116,26 @@ def answer_linkedin_question(question:str, language:str, input_type:InputType, o
     except Exception as e:
         return f"Erro ao chamar o Ollama: {e}"
 
-def scroll_element(element:webelement.WebElement, steps:int=5) -> None:
+def scroll_element(element:webelement.WebElement, min_steps:int=3, max_steps:int=6) -> None:
     global driver
-    print(f"START SCROLLING with {steps} steps")
+    print(f"START SCROLLING")
     total_height = driver.execute_script("return arguments[0].scrollHeight", element)
-    target = total_height
+    min_walk = int(total_height/max_steps)
+    max_walk = int(total_height/min_steps)
+    # print(f"min walk {min_walk}, max walk {max_walk}, height {total_height}")
     current_pos = 0
-    while current_pos < target:
-        step = random.randint(50, 150) # Deslocamento variável
+    while current_pos < total_height - 1:
+        step = random.randint(min_walk, max_walk)
+        # print(f"add {step}, current {current_pos}")
         current_pos += step
-        driver.execute_script(f"arguments[0].scrollTo(0, {current_pos});", element)
-        time.sleep(random.uniform(0.05, 0.3)) # Pausa humana
-    print(f"FINISH SCROLLING ELEM {element}")
+        if current_pos > total_height:
+            current_pos = total_height - 1
+        driver.execute_script(f"arguments[0].scrollTo({{top: {current_pos}, behavior: 'smooth'}});", element)
+        time.sleep(random.uniform(0.3, 0.5))
+    print(f"FINISH SCROLLING")
 
 def click_element(elem) -> None:
     global actions
-    # driver.execute_script("arguments[0].click();", elem) #isso é facilmente detectado
     actions.move_to_element(elem).click().perform()
 
 def verify_login() -> bool:
