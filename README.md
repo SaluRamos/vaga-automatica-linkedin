@@ -48,16 +48,15 @@ Deixe sua STAR como forma de agradecimento 👍
 - abra o terminal na raiz do projeto e rode o comando ```python main.py```
 
 ### Erros comuns
-
+  
 Se você estiver obtendo o erro  
 ![alt text](readme_images/image3.png)
-rode o arquivo **fix_issue.bat**
-![alt text](radme_images/image4.png)
-  
+rode o arquivo **fix_issue.bat** e tente reiniciar o computador.  
+    
 ### TODO
 
-- a parte de preencher input é suscetível a falhas, é preciso refino. Não encontrei uma maneira de descobrir oque o field espera (numeric or string)
 - quebrar a função principal, fiz tudo corrido e ficou essa bagunça.
+- a parte de preencher input é suscetível a falhas, é preciso refino. Não encontrei uma maneira de descobrir oque o field espera (numeric or string)
 - criar classe? Não acho que essa abordagem permita múltiplas instâncias.
 - suportar curriculo em espanhol
 - suporte ao site Indeed

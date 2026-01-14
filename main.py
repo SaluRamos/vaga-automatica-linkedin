@@ -75,7 +75,7 @@ def get_driver_options() -> uc.ChromeOptions:
         driver_options.add_argument("--start-maximized")
     return driver_options
 
-def get_dad(elem, levels=1) -> webelement.WebElement:
+def get_dad(elem:webelement.WebElement, levels=1) -> webelement.WebElement:
     if levels == 0:
         return elem
     dad = elem.find_element(By.XPATH, "..")
@@ -115,9 +115,9 @@ def answer_linkedin_question(question:str, language:str, input_type:InputType, o
     except Exception as e:
         return f"Erro ao chamar o Ollama: {e}"
 
-def scroll_element(element, steps=5) -> None:
-    print(f"START SCROLLING ELEM {element} in {steps} steps")
+def scroll_element(element:webelement.WebElement, steps:int=5) -> None:
     global driver
+    print(f"START SCROLLING with {steps} steps")
     total_height = driver.execute_script("return arguments[0].scrollHeight", element)
     target = total_height
     current_pos = 0
