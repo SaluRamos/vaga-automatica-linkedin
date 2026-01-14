@@ -337,7 +337,9 @@ if __name__ == "__main__":
 
     project_path = os.getcwd()
     profile_path = os.path.join(project_path, "chrome_profile")
-    
+
+    chrome_exe = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe") 
+
     driver_options = uc.ChromeOptions()
     driver_options.add_argument(f"--user-data-dir={profile_path}") #required
     driver_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
@@ -348,7 +350,11 @@ if __name__ == "__main__":
     if opt["driver"]["maximized"]:
         driver_options.add_argument("--start-maximized")
 
-    driver = uc.Chrome(options=driver_options, headless=opt["driver"]["headless"], use_subprocess=False)
+    driver = uc.Chrome(
+        browser_executable_path=chrome_exe, # chrome com versão fixa na pasta bin
+        headless=opt["driver"]["headless"], 
+        use_subprocess=True
+    )
     if not opt["driver"]["maximized"]:
         w = opt["driver"]["width"]
         h = opt["driver"]["height"]

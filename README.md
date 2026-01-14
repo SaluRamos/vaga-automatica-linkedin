@@ -35,14 +35,17 @@ Deixe sua STAR como forma de agradecimento 👍
 | **BNB Chain** | <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/bnb.png" width="20"> | `0xcD36cf511646bD39Cb23f425786a4f3699CcFD2a` |
 | **TRON** | <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/trx.png" width="20"> | `TWhZLJ61uY1bo8zicwhnfS5NKuuD6BJ8D8` |
   
-### Requirements
+### Como rodar
   
-- google chrome instalado
-- Ollama instalado
-- python 3 (testado com 3.10 e 3.14)
+- [Ollama](https://ollama.com/) instalado
+- GPU capaz de rodar o modelo **gemma3:4b** (é possivel alterar o modelo nas options.json)
+- [python 3](https://www.python.org/ftp/python/3.14.2/python-3.14.2-amd64.exe) instalado
 - opcional: crie uma venv
-- pip install -r requirements.txt
-- python main.py
+- crie a pasta **bin** na raiz do projeto
+- Baixe o [chrome for testing](https://googlechromelabs.github.io/chrome-for-testing/#stable) **win64** e extraia para a pasta bin
+- a versão do **chrome for testing** e do **undetected chromedriver** devem ser idênticas. Você pode verificar a versão do **undetected chromedriver** em **"%AppData%\Roaming\undetected_chromedriver\undetected_chromedriver.exe"** abrindo as propriedades do executável e visualizando a aba 'detalhes'
+- rode o comando ```pip install -r requirements.txt``` para instalar dependências
+- abra o terminal na raiz do projeto e rode o comando ```python main.py```
 
 ### TODO
 
