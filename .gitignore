@@ -1,2 +1,4 @@
 chrome_profile/
 private.json
+src/__pycache__/
+bin/

@@ -12,6 +12,7 @@ import ollama
 import json
 import logging
 from enum import Enum
+from src.params import LinkedInParams
 
 driver = None
 actions = None
@@ -70,66 +71,6 @@ def click_element(elem) -> None:
     # driver.execute_script("arguments[0].click();", elem) #isso é facilmente detectado
     actions.move_to_element(elem).click().perform()
 
-# URL PARAMS
-
-def remote_param(remote_job:bool, hibrid:bool, onsite:bool) -> str:
-    final_filter_remote = "f_WT="
-    addition = ""
-    if (sum([remote_job, hibrid, onsite]) > 1):
-        addition = "%2C"
-    if (remote_job):
-        final_filter_remote = final_filter_remote + "2"
-    if (hibrid):
-        final_filter_remote = final_filter_remote + f"{addition}3"
-    if (onsite):
-        final_filter_remote = final_filter_remote + f"{addition}1"
-    return final_filter_remote
-
-def timelapse_param(seconds:int) -> str:
-    return f"f_TPR=r{seconds}"
-
-def simplified_param() -> str: #candidatura simplificada
-    return "f_AL=true"
-
-def keyword_param(value:str) -> str:
-    return f'keywords={value.replace(" ", "%20")}'
-
-def geoid_param(value:str) -> str:
-    return f"geoId={value}"
-
-def distance_param(miles:int) -> str:
-    return f"distance={miles}"
-
-def origin_param() -> str:
-    return "origin=JOB_SEARCH_PAGE_JOB_FILTER"
-
-def ignore_cache_param() -> str:
-    return "refresh=true"
-
-def in_my_chain_param() -> str: #pessoas da minha rede no linkedin
-    return "f_JIYN=true"
-
-def low_candidates_param() -> str: #vagas com menos de 5 candidatos
-    return "f_EA=true"
-
-# def filter_by_sector_param() -> str:
-#     # 4 = desenvolvimento de software
-#     # 118 = segurança de redes de computadores
-#     return "f_I=4%2C118" 
-
-def experience_level_param(internship:bool, assistent:bool, junior:bool, pleno_and_senior:bool, director:bool, executive:bool) -> str:
-    buf = []
-    if internship:       buf.append("1")
-    if assistent:        buf.append("2")
-    if junior:           buf.append("3")
-    if pleno_and_senior: buf.append("4")
-    if director:         buf.append("5")
-    if executive:        buf.append("6")
-    if not buf:
-        raise Exception("No experience selected!")
-    final = "%2C".join(buf)
-    return f"f_E={final}"
-
 # BACKEND
 
 def verify_login() -> bool:
@@ -171,9 +112,13 @@ def subscribe_to_all_jobs():
             click_element(job)
             time.sleep(2) #espera carregar infos
             #verificar se já candidatou
+            subscribe_btn = None
             try:
                 subscribe_btn = driver.find_element(By.ID, "jobs-apply-button-id")
             except:
+                if not subscribe_btn.is_enabled():
+                    print("LINKEDIN ENCONTRA-SE BLOQUEADO POR EXCESSO DE TENTATIVAS")
+                    raise Exception("APLICAÇÕES ESGOTADAS")
                 print("IGNORANDO JOB, JÁ SE CANDIDATOU")
                 actual_job = actual_job + 1
                 continue #ignora job
@@ -392,6 +337,7 @@ if __name__ == "__main__":
 
     project_path = os.getcwd()
     profile_path = os.path.join(project_path, "chrome_profile")
+    
     driver_options = uc.ChromeOptions()
     driver_options.add_argument(f"--user-data-dir={profile_path}") #required
     driver_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
@@ -402,7 +348,7 @@ if __name__ == "__main__":
     if opt["driver"]["maximized"]:
         driver_options.add_argument("--start-maximized")
 
-    driver = uc.Chrome(options=driver_options, headless=False, use_subprocess=False)
+    driver = uc.Chrome(options=driver_options, headless=opt["driver"]["headless"], use_subprocess=False)
     if not opt["driver"]["maximized"]:
         w = opt["driver"]["width"]
         h = opt["driver"]["height"]
@@ -416,29 +362,29 @@ if __name__ == "__main__":
     print("IS LOGGED!")
 
     params = []
-    params.append(keyword_param(opt["filters"]["keyword"]))
+    params.append(LinkedInParams.keyword_param(opt["filters"]["keyword"]))
     if opt["filters"]["use_job_model"]:
-        params.append(remote_param(opt["filters"]["filter_remote_job"], opt["filters"]["filter_hibrid_job"], opt["filters"]["filter_onsite_job"]))
+        params.append(LinkedInParams.remote_param(opt["filters"]["filter_remote_job"], opt["filters"]["filter_hibrid_job"], opt["filters"]["filter_onsite_job"]))
     if opt["filters"]["use_timelapse"]:
-        params.append(timelapse_param(604800))
+        params.append(LinkedInParams.timelapse_param(604800))
     if opt["filters"]["use_geoid"]:
-        params.append(geoid_param(opt["filters"]["geoid"]))
+        params.append(LinkedInParams.geoid_param(opt["filters"]["geoid"]))
     if opt["filters"]["use_max_distance"]:
-        params.append(distance_param(opt["filters"]["max_distance_in_miles"]))
+        params.append(LinkedInParams.distance_param(opt["filters"]["max_distance_in_miles"]))
     if opt["filters"]["in_my_chain"]:
-        params.append(in_my_chain_param())
+        params.append(LinkedInParams.in_my_chain_param())
     if opt["filters"]["low_candidates"]:
-        params.append(low_candidates_param())
+        params.append(LinkedInParams.low_candidates_param())
     if opt["filters"]["use_experience_level"]:
-        params.append(experience_level_param(
+        params.append(LinkedInParams.experience_level_param(
             opt["filters"]["internship"], opt["filters"]["assistent"], opt["filters"]["junior"], 
             opt["filters"]["pleno_and_senior"], opt["filters"]["director"], opt["filters"]["executive"]
         ))
     # Parâmetros fixos/obrigatórios
     params.extend([
-        simplified_param(),
-        origin_param(),
-        ignore_cache_param()
+        LinkedInParams.simplified_param(),
+        LinkedInParams.origin_param(),
+        LinkedInParams.ignore_cache_param()
     ])
 
     final_query = "&".join(params)
