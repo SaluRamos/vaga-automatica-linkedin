@@ -21,7 +21,6 @@ import sys
 driver = None
 actions = None
 job_url = "https://www.linkedin.com/jobs/search/?"
-is_premium = True
 opt = {}
 
 class InputType(Enum):
@@ -116,7 +115,7 @@ def answer_linkedin_question(question:str, language:str, input_type:InputType, o
     except Exception as e:
         return f"Erro ao chamar o Ollama: {e}"
 
-def scroll_element(element, steps=5):
+def scroll_element(element, steps=5) -> None:
     print(f"START SCROLLING ELEM {element} in {steps} steps")
     global driver
     total_height = driver.execute_script("return arguments[0].scrollHeight", element)
@@ -144,8 +143,9 @@ def verify_login() -> bool:
         return True
     return False
 
-def subscribe_to_all_jobs():
-    global is_premium, opt
+def subscribe_to_all_jobs() -> None:
+    global opt
+    is_premium = True
     actual_page = 1
     actual_job = 1
     submited_jobs = 0
@@ -174,7 +174,7 @@ def subscribe_to_all_jobs():
             try:
                 subscribe_btn = driver.find_element(By.ID, "jobs-apply-button-id")
             except:
-                if not subscribe_btn.is_enabled():
+                if subscribe_btn is not None and not subscribe_btn.is_enabled():
                     print("LINKEDIN ENCONTRA-SE BLOQUEADO POR EXCESSO DE TENTATIVAS")
                     raise Exception("APLICAÇÕES ESGOTADAS")
                 print("IGNORANDO JOB, JÁ SE CANDIDATOU")
@@ -383,7 +383,6 @@ def select_resume(is_portuguese:bool, is_english:bool) -> None:
 
 def main():
     global driver, actions, job_url, opt
-    require_admin()
 
     try:
         with open("private.json", "r", encoding="utf-8") as file: #developer safety
@@ -455,14 +454,4 @@ def main():
     driver.quit()
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        print("\n" + "="*50)
-        print(f"ERRO CRÍTICO DURANTE A EXECUÇÃO: {e}")
-        import traceback
-        traceback.print_exc()
-        print("="*50)
-    finally:
-        print("\nScript finalizado.")
-        input("Pressione ENTER para fechar esta janela...") # Impede o fechamento automático
+    main()
