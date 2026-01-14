@@ -11,8 +11,12 @@ import os
 import ollama
 import json
 import logging
+import random
 from enum import Enum
 from src.params import LinkedInParams
+import glob
+import ctypes
+import sys
 
 driver = None
 actions = None
@@ -20,11 +24,57 @@ job_url = "https://www.linkedin.com/jobs/search/?"
 is_premium = True
 opt = {}
 
-# UTILS
-
 class InputType(Enum):
     NUMERIC = 1
     DROPDOWN = 2 #used in fieldset too
+
+def require_admin() -> None:
+    if not ctypes.windll.shell32.IsUserAnAdmin():
+        print("Solicitando privilégios de administrador...")
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+        sys.exit()
+
+def get_profile_path() -> str:
+    return os.path.join(os.getcwd(), "chrome_profile")
+
+def clean_profile() -> None:
+    profile_path = get_profile_path()
+    # Remove arquivos temporários (.tmp) em qualquer subpasta do perfil
+    tmp_files = glob.glob(os.path.join(profile_path, "**/*.tmp"), recursive=True)
+    for f in tmp_files:
+        try: 
+            os.remove(f)
+        except: 
+            pass
+    # Se o arquivo Preferences for maior que 50MB, algo está errado, reseta ele.
+    pref_path = os.path.join(profile_path, "Default", "Preferences")
+    if os.path.exists(pref_path):
+        if os.path.getsize(pref_path) > 50 * 1024 * 1024: # 50MB
+            try: 
+                os.remove(pref_path)
+            except: 
+                pass
+
+def get_driver_options() -> uc.ChromeOptions:
+    driver_options = uc.ChromeOptions()
+    # Desativa o Safe Browsing (que incha o arquivo Preferences com listas de URLs)
+    driver_options.add_argument("--safebrowsing-disable-auto-update")
+    driver_options.add_argument("--disable-features=SafeBrowsing")
+    # Desativa métricas e relatórios de erro
+    driver_options.add_argument("--disable-breakpad")
+    driver_options.add_argument("--disable-report-whitelist")
+    driver_options.add_argument("--no-pings")
+    # Desativa o "Field Trials" (telemetria do Google)
+    driver_options.add_argument("--disable-fext-trials")
+    driver_options.add_argument("--remote-debugging-port=9222")
+    driver_options.add_argument(f"--user-data-dir={get_profile_path()}")
+    if opt["driver"]["headless"]:
+        driver_options.add_argument("--headless")
+    if opt["driver"]["auto_open_devtools"]:
+        driver_options.add_argument("--auto-open-devtools-for-tabs")
+    if opt["driver"]["maximized"]:
+        driver_options.add_argument("--start-maximized")
+    return driver_options
 
 def get_dad(elem, levels=1) -> webelement.WebElement:
     if levels == 0:
@@ -66,12 +116,23 @@ def answer_linkedin_question(question:str, language:str, input_type:InputType, o
     except Exception as e:
         return f"Erro ao chamar o Ollama: {e}"
 
+def scroll_element(element, steps=5):
+    print(f"START SCROLLING ELEM {element} in {steps} steps")
+    global driver
+    total_height = driver.execute_script("return arguments[0].scrollHeight", element)
+    target = total_height
+    current_pos = 0
+    while current_pos < target:
+        step = random.randint(50, 150) # Deslocamento variável
+        current_pos += step
+        driver.execute_script(f"arguments[0].scrollTo(0, {current_pos});", element)
+        time.sleep(random.uniform(0.05, 0.3)) # Pausa humana
+    print(f"FINISH SCROLLING ELEM {element}")
+
 def click_element(elem) -> None:
     global actions
     # driver.execute_script("arguments[0].click();", elem) #isso é facilmente detectado
     actions.move_to_element(elem).click().perform()
-
-# BACKEND
 
 def verify_login() -> bool:
     global driver
@@ -95,12 +156,7 @@ def subscribe_to_all_jobs():
         print(f"jobs antes de scrolar = {len(jobs)}")
         jobs_list = get_dad(jobs[0], 3)
         jobs_scroll = get_dad(jobs_list)
-        driver.execute_script("arguments[0].scrollTo({top: arguments[0].scrollHeight/3, behavior: 'smooth'});", jobs_scroll)
-        time.sleep(0.5)
-        driver.execute_script("arguments[0].scrollTo({top: (arguments[0].scrollHeight/3)*2, behavior: 'smooth'});", jobs_scroll)
-        time.sleep(0.5)
-        driver.execute_script("arguments[0].scrollTo({top: arguments[0].scrollHeight, behavior: 'smooth'});", jobs_scroll)
-        time.sleep(0.5)
+        scroll_element(jobs_scroll)
         jobs = driver.find_elements(By.CSS_SELECTOR, "div[data-job-id]") #encontra os jobs de novo
         print(f"jobs após scrolar = {len(jobs)}")
 
@@ -132,10 +188,7 @@ def subscribe_to_all_jobs():
                 actual_job = actual_job + 1
                 continue #ignora job
             #scrolla as informações
-            driver.execute_script("arguments[0].scrollTo({top: arguments[0].scrollHeight/2, behavior: 'smooth'});", job_info)
-            time.sleep(0.5)
-            driver.execute_script("arguments[0].scrollTo({top: arguments[0].scrollHeight, behavior: 'smooth'});", job_info)
-            time.sleep(0.5)
+            scroll_element(job_info)
             #coletar dados do job
             title = driver.find_element(By.CSS_SELECTOR, ".t-24.job-details-jobs-unified-top-card__job-title").text
             print(f"title = {title}")
@@ -328,7 +381,10 @@ def select_resume(is_portuguese:bool, is_english:bool) -> None:
     except Exception as e:
         logging.error("Falha ao selecionar curriculo", exc_info=True)
 
-if __name__ == "__main__":
+def main():
+    global driver, actions, job_url, opt
+    require_admin()
+
     try:
         with open("private.json", "r", encoding="utf-8") as file: #developer safety
             opt = json.load(file)
@@ -337,23 +393,13 @@ if __name__ == "__main__":
             opt = json.load(file)
     print(f"loaded options = {opt}")
 
-    project_path = os.getcwd()
-    profile_path = os.path.join(project_path, "chrome_profile")
+    chrome_exe_path = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe")
+    print(f"chrome exe path: {chrome_exe_path}")
 
-    chrome_exe = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe") 
-
-    driver_options = uc.ChromeOptions()
-    driver_options.add_argument(f"--user-data-dir={profile_path}") #required
-    driver_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36")
-    if opt["driver"]["headless"]:
-        driver_options.add_argument("--headless")
-    if opt["driver"]["auto_open_devtools"]:
-        driver_options.add_argument("--auto-open-devtools-for-tabs")
-    if opt["driver"]["maximized"]:
-        driver_options.add_argument("--start-maximized")
-
+    clean_profile()
     driver = uc.Chrome(
-        browser_executable_path=chrome_exe, # chrome com versão fixa na pasta bin
+        options=get_driver_options(),
+        browser_executable_path=chrome_exe_path, # chrome com versão fixa na pasta bin
         headless=opt["driver"]["headless"], 
         use_subprocess=True
     )
@@ -407,3 +453,16 @@ if __name__ == "__main__":
         time.sleep(1000000) #dar tempo de debugar
 
     driver.quit()
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print("\n" + "="*50)
+        print(f"ERRO CRÍTICO DURANTE A EXECUÇÃO: {e}")
+        import traceback
+        traceback.print_exc()
+        print("="*50)
+    finally:
+        print("\nScript finalizado.")
+        input("Pressione ENTER para fechar esta janela...") # Impede o fechamento automático

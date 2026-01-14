@@ -47,6 +47,13 @@ Deixe sua STAR como forma de agradecimento 👍
 - rode o comando ```pip install -r requirements.txt``` para instalar dependências
 - abra o terminal na raiz do projeto e rode o comando ```python main.py```
 
+### Erros comuns
+
+Se você estiver obtendo o erro  
+![alt text](readme_images/image3.png)
+rode o arquivo **fix_issue.bat**
+![alt text](radme_images/image4.png)
+  
 ### TODO
 
 - a parte de preencher input é suscetível a falhas, é preciso refino. Não encontrei uma maneira de descobrir oque o field espera (numeric or string)
