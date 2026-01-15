@@ -13,6 +13,7 @@
         "details":false
     },
     "driver":{
+        "load_profile":true,
         "headless":false,
         "auto_open_devtools":false,
         "maximized":false,
