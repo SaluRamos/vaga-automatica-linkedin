@@ -43,8 +43,8 @@ Deixe sua STAR como forma de agradecimento 👍
 - opcional: crie uma venv
 - crie a pasta **bin** na raiz do projeto
 - Baixe o [chrome for testing](https://googlechromelabs.github.io/chrome-for-testing/#stable) **win64** e extraia para a pasta bin
-- a versão do **chrome for testing** e do **undetected chromedriver** devem ser idênticas. Você pode verificar a versão do **undetected chromedriver** em **"%AppData%\undetected_chromedriver\undetected_chromedriver.exe"** abrindo as propriedades do executável e visualizando a aba 'detalhes'
 - rode o comando ```pip install -r requirements.txt``` para instalar dependências
+- a versão do **chrome for testing** e do **undetected chromedriver** devem ser idênticas. Você pode verificar a versão do **undetected chromedriver** em **"%AppData%\undetected_chromedriver\undetected_chromedriver.exe"** abrindo as propriedades do executável e visualizando a aba 'detalhes'
 - abra o terminal na raiz do projeto e rode o comando ```python main.py```
 
 ### Erros comuns
@@ -57,7 +57,7 @@ rode o arquivo **fix_issue.bat** e tente reiniciar o computador.
 
 - quebrar a função principal, fiz tudo corrido e ficou essa bagunça.
 - a parte de preencher input é suscetível a falhas, é preciso refino. Não encontrei uma maneira de descobrir oque o field espera (numeric or string)
-- criar classe? Não acho que essa abordagem permita múltiplas instâncias.
+- criar classe com as funções úteis que podem ser herdadas
 - suportar curriculo em espanhol
 - suporte ao site Indeed
 - suporte ao site Gupy

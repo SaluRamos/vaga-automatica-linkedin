@@ -1,3 +1,4 @@
+import tensorflow as tf
 import undetected_chromedriver as uc
 from undetected_chromedriver import webelement
 from selenium.webdriver.common.by import By
@@ -17,11 +18,14 @@ from src.params import LinkedInParams
 import glob
 import ctypes
 import sys
+import math
 
 driver = None
 actions = None
 job_url = "https://www.linkedin.com/jobs/search/?"
 opt = {}
+mouse_mlp_model = tf.keras.models.load_model("models/mouse_mlp.keras")
+mx, my = 0, 0
 
 class InputType(Enum):
     NUMERIC = 1
@@ -116,6 +120,7 @@ def answer_linkedin_question(question:str, language:str, input_type:InputType, o
     except Exception as e:
         return f"Erro ao chamar o Ollama: {e}"
 
+#melhorar isso para permitir scroll para cima também
 def scroll_element(element:webelement.WebElement, min_steps:int=3, max_steps:int=6) -> None:
     global driver
     print(f"START SCROLLING")
@@ -134,9 +139,95 @@ def scroll_element(element:webelement.WebElement, min_steps:int=3, max_steps:int
         time.sleep(random.uniform(0.3, 0.5))
     print(f"FINISH SCROLLING")
 
-def click_element(elem) -> None:
-    global actions
-    actions.move_to_element(elem).click().perform()
+def start_actions() -> None:
+    global driver, actions, mouse_mlp_model, mx, my
+    window_size = driver.get_window_size()
+    width = window_size['width']
+    height = window_size['height']
+    mx = random.randrange(0, width)
+    my = random.randrange(0, height)
+    actions = ActionChains(driver)
+    actions.move_by_offset(mx, my).perform()
+    print(f"Mouse iniciado em: {mx}, {my}")
+    mouse_mlp_model = tf.keras.models.load_model("models/mouse_mlp.keras")
+
+def create_visual_cursor() -> None:
+    global driver
+    script = """
+    var cursor = document.createElement('div');
+    cursor.id = 'selenium-cursor';
+    cursor.style.position = 'fixed';
+    cursor.style.zIndex = '2147483647';
+    cursor.style.width = '12px';
+    cursor.style.height = '12px';
+    cursor.style.background = 'red';
+    cursor.style.borderRadius = '50%';
+    cursor.style.border = '2px solid white';
+    cursor.style.pointerEvents = 'none'; // Não interfere nos cliques
+    cursor.style.top = '0px';
+    cursor.style.left = '0px';
+    cursor.style.transition = 'all 0.05s ease-out'; // Deixa o movimento fluido
+    document.body.appendChild(cursor);
+    """
+    driver.execute_script(script)
+
+def update_visual_cursor() -> None:
+    global driver, mx, my
+    script = f"""
+    var cursor = document.getElementById('selenium-cursor');
+    if(cursor) {{
+        cursor.style.left = '{mx}px';
+        cursor.style.top = '{my}px';
+    }}
+    """
+    driver.execute_script(script)
+
+def click_element(elem:webelement.WebElement) -> None:
+    global actions, mouse_mlp_model, mx, my
+    btn_x, btn_y = elem.location_once_scrolled_into_view["x"], elem.location_once_scrolled_into_view["y"]
+    bw = elem.size["width"]
+    bh = elem.size["height"]
+    window_size = driver.get_window_size()
+    window_width = window_size['width']
+    window_height = window_size['height']
+    max_steps = 200 # Trava de segurança para não rodar infinito
+    steps = 0
+    while steps < max_steps:
+        is_mouse_inside_btn = (btn_x <= mx <= btn_x + bw and btn_y <= my <= btn_y + bh)
+        target_x = btn_x + bw/2
+        target_y = btn_y + bh/2
+        offset_x = (target_x - mx)/window_width
+        offset_y = (target_y - my)/window_height
+        #inferencia
+        inp = tf.convert_to_tensor([[offset_x, offset_y, is_mouse_inside_btn]], dtype=tf.float32)
+        mov_x_n, mov_y_n, click_p = mouse_mlp_model.predict(inp, verbose=0)
+        # desnormaliza movimento
+        mov_x = math.ceil(mov_x_n[0][0] * window_width)
+        mov_y = math.ceil(mov_y_n[0][0] * window_height)
+        # threshold de clique
+        click = click_p[0][0] < 0.01
+        # intenção e clamp (crome não aceita coordenadas negativas)
+        intended_x = mx + mov_x
+        intended_y = my + mov_y
+        new_mx = max(0, min(intended_x, window_width - 1))
+        new_my = max(0, min(intended_y, window_height - 1))
+        adjusted_mov_x = new_mx - mx
+        adjusted_mov_y = new_my - my
+        #efetuar ação da IA
+        print(f"{mx}, {my}, {mov_x}, {mov_y}, {is_mouse_inside_btn}, {click_p[0][0]}")
+        if adjusted_mov_x != 0 or adjusted_mov_y != 0:
+            actions.move_by_offset(adjusted_mov_x, adjusted_mov_y).perform()
+        mx += adjusted_mov_x
+        my += adjusted_mov_y
+        update_visual_cursor()
+        #calcular click
+        if click and is_mouse_inside_btn:
+            actions.click().perform()
+            print("Click executado")
+            return
+        time.sleep(0.01)
+    print("Click timeout")
+    
 
 def verify_login() -> bool:
     global driver
@@ -156,6 +247,7 @@ def subscribe_to_all_jobs() -> None:
     submited_jobs = 0
     while True:
         time.sleep(3) # espera página carregar
+        create_visual_cursor()
         #encontra e scrolla o container da lista de jobs
         jobs = driver.find_elements(By.CSS_SELECTOR, "div[data-job-id]")
         print(f"jobs antes de scrolar = {len(jobs)}")
@@ -409,8 +501,9 @@ def main():
         h = opt["driver"]["height"]
         driver.set_window_size(h, w)
 
-    actions = ActionChains(driver)
+    start_actions()
     
+    #colocar isso dentro do verify_login
     is_logged = False
     while not is_logged:
         is_logged = verify_login()
