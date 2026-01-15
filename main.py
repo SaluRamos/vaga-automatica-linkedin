@@ -40,7 +40,7 @@ def require_admin() -> None:
 def get_profile_path() -> str:
     return os.path.join(os.getcwd(), "chrome_profile")
 
-def clean_profile() -> None:
+def clean_chrome_profile() -> None:
     profile_path = get_profile_path()
     # Remove arquivos temporários (.tmp) em qualquer subpasta do perfil
     tmp_files = glob.glob(os.path.join(profile_path, "**/*.tmp"), recursive=True)
@@ -519,7 +519,7 @@ def main():
     chrome_exe_path = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe")
     print(f"chrome exe path: {chrome_exe_path}")
 
-    clean_profile()
+    clean_chrome_profile()
     driver = uc.Chrome(
         options=get_driver_options(),
         browser_executable_path=chrome_exe_path, # chrome com versão fixa na pasta bin
