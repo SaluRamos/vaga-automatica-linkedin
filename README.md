@@ -35,6 +35,10 @@ Deixe sua STAR como forma de agradecimento 👍
 | **BNB Chain** | <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/bnb.png" width="20"> | `0xcD36cf511646bD39Cb23f425786a4f3699CcFD2a` |
 | **TRON** | <img src="https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/trx.png" width="20"> | `TWhZLJ61uY1bo8zicwhnfS5NKuuD6BJ8D8` |
   
+### Build BETA
+  
+Tentarei gerar um executável com python e todos os drivers embutidos em breve, assim que tivermos uma versão estável.  
+  
 ### Como rodar
   
 - [Ollama](https://ollama.com/) instalado
