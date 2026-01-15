@@ -13,12 +13,12 @@ import ollama
 import json
 import logging
 import random
-from enum import Enum
-from src.params import LinkedInParams
 import glob
 import ctypes
 import sys
 import math
+from src.params import LinkedInParams
+from src.enums import InputType
 
 driver = None
 actions = None
@@ -26,10 +26,6 @@ job_url = "https://www.linkedin.com/jobs/search/?"
 opt = {}
 mouse_mlp_model = tf.keras.models.load_model("models/mouse_mlp.keras")
 mx, my = 0, 0
-
-class InputType(Enum):
-    NUMERIC = 1
-    DROPDOWN = 2 #used in fieldset too
 
 def require_admin() -> None:
     if not ctypes.windll.shell32.IsUserAnAdmin():
