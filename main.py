@@ -325,7 +325,7 @@ def subscribe_to_all_jobs() -> None:
             print(f"id = {id}")
             if is_premium:
                 try:
-                    amount_applicants_text = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, "jobs-premium-applicant-insights__list-item"))).text
+                    amount_applicants_text = get_element(5, By.CLASS_NAME, "jobs-premium-applicant-insights__list-item").text
                     amount_applicants = int(amount_applicants_text.split()[0].replace(".", ""))
                     print(f"amount_applicants = {amount_applicants}")
                 except Exception as e:
@@ -370,23 +370,23 @@ def subscribe_to_all_jobs() -> None:
                     if actual_apply_page == 2 or not has_progress_bar:
                         select_resume(is_portuguese, is_english)
                     try:
-                        subscribe_next = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@aria-label="Avançar para próxima etapa"]')))
+                        subscribe_next = get_element(5, By.XPATH, '//*[@aria-label="Avançar para próxima etapa"]')
                         click_element(subscribe_next)
                         print("NEXT PAGE")
                         actual_apply_page = actual_apply_page + 1
                         time.sleep(0.5)
                     except Exception as e:
                         if has_progress_bar:
-                            review = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@aria-label="Revise sua candidatura"]')))
+                            review = get_element(5, By.XPATH, '//*[@aria-label="Revise sua candidatura"]')
                             click_element(review)
                             print("REVISANDO CANDIDATURA")
                             time.sleep(0.5)
-                        send = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, '//*[@aria-label="Enviar candidatura"]')))
+                        send = get_element(5, By.XPATH, '//*[@aria-label="Enviar candidatura"]')
                         click_element(send)
                         print("FINALIZANDO")
                         time.sleep(2)
                         try:
-                            close_btn = WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "button[data-test-modal-close-btn]")))
+                            close_btn = get_element(5, By.CSS_SELECTOR, "button[data-test-modal-close-btn]")
                             click_element(close_btn)
                         except Exception as e:
                             pass
@@ -421,7 +421,7 @@ def answer_questions(details_lang:str) -> None:
         print("NOT IN PREMIUM PREFERENCE PAGE")
     #tratando inputs
     try:
-        inputs = WebDriverWait(driver, 3).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'artdeco-text-input--input')))
+        inputs = get_elements(3, By.CLASS_NAME, 'artdeco-text-input--input')
         print(f"QUANTIDADE DE INPUT's ENCONTRADOS: {len(inputs)}")
         for select in inputs:
             question = get_dad(select).text
@@ -447,7 +447,7 @@ def answer_questions(details_lang:str) -> None:
         pass
     #tratando dropdowns
     try:
-        selects = WebDriverWait(driver, 3).until(EC.visibility_of_all_elements_located((By.CLASS_NAME, 'fb-dash-form-element__select-dropdown')))
+        selects = get_elements(3, By.CLASS_NAME, 'fb-dash-form-element__select-dropdown')
         print(f"QUANTIDADE DE DROPDOWN's ENCONTRADOS: {len(selects)}")
         for select in selects:
             dropdown = Select(select)
@@ -470,7 +470,7 @@ def answer_questions(details_lang:str) -> None:
         pass
     #tratando fieldset
     try:
-        fieldsets = driver.find_elements(By.CSS_SELECTOR, "fieldset[data-test-form-builder-radio-button-form-component='true']")
+        fieldsets = get_elements(3, By.CSS_SELECTOR, "fieldset[data-test-form-builder-radio-button-form-component='true']")
         print(f"QUANTIDADE DE FIELDSET's ENCONTRADOS: {len(fieldsets)}")
         for fieldset in fieldsets:
             question = fieldset.find_element(By.XPATH, "legend").text
@@ -493,7 +493,7 @@ def answer_questions(details_lang:str) -> None:
 def select_resume(is_portuguese:bool, is_english:bool) -> None:
     global driver
     try:
-        resumes = WebDriverWait(driver, 3).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, ".ui-attachment.jobs-document-upload-redesign-card__container")))
+        resumes = get_elements(3, By.CSS_SELECTOR, ".ui-attachment.jobs-document-upload-redesign-card__container")
         print(f"CURRICULOS ENCONTRADOS: {len(resumes)}")
         for resume in resumes:
             if is_portuguese and "PORTUGUES" in resume.text:
