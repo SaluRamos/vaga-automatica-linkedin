@@ -22,7 +22,6 @@ from src.enums import InputType
 
 driver = None
 actions = None
-job_url = "https://www.linkedin.com/jobs/search/?"
 opt = {}
 mouse_mlp_model = tf.keras.models.load_model("models/mouse_mlp.keras")
 mx, my = 0, 0
@@ -260,6 +259,7 @@ def get_jobsearch_url() -> str:
         LinkedInParams.ignore_cache_param()
     ])
     final_query = "&".join(params)
+    job_url = "https://www.linkedin.com/jobs/search/?"
     job_url = f"{job_url}{final_query}"
     print(f"url is: {job_url}")
     return job_url
