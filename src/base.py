@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
+import uuid
 #native libs
 import os
 import glob
@@ -125,28 +126,30 @@ class Bot():
         self.actions.move_by_offset(self.mx, self.my).perform()
         print(f"Mouse iniciado em: {self.mx}, {self.my}")
 
-    def create_visual_cursor(self) -> None:
-        script = """
-        var cursor = document.createElement('div');
-        cursor.id = 'selenium-cursor';
-        cursor.style.position = 'fixed';
-        cursor.style.zIndex = '2147483647';
-        cursor.style.width = '12px';
-        cursor.style.height = '12px';
-        cursor.style.background = 'red';
-        cursor.style.borderRadius = '50%';
-        cursor.style.border = '2px solid white';
-        cursor.style.pointerEvents = 'none'; // Não interfere nos cliques
-        cursor.style.top = '0px';
-        cursor.style.left = '0px';
-        cursor.style.transition = 'all 0.05s ease-out'; // Deixa o movimento fluido
-        document.body.appendChild(cursor);
-        """
-        self.driver.execute_script(script)
+    def _create_visual_cursor(self) -> None:
+        if self.opt["driver"]["show_cursor"] and not hasattr(self, "cursor_created"):
+            self.cursor_created = True
+            self.cursor_uuid = uuid.uuid4()
+            script = f"""
+            var cursor = document.createElement('div');
+            cursor.id = '{self.cursor_uuid}';
+            cursor.style.position = 'fixed';
+            cursor.style.zIndex = '2147483647';
+            cursor.style.width = '12px';
+            cursor.style.height = '12px';
+            cursor.style.background = 'red';
+            cursor.style.borderRadius = '50%';
+            cursor.style.border = '2px solid white';
+            cursor.style.pointerEvents = 'none'; // Não interfere nos cliques
+            cursor.style.top = '0px';
+            cursor.style.left = '0px';
+            document.body.appendChild(cursor);
+            """
+            self.driver.execute_script(script)
 
-    def update_visual_cursor(self) -> None:
+    def _update_visual_cursor(self) -> None:
         script = f"""
-        var cursor = document.getElementById('selenium-cursor');
+        var cursor = document.getElementById('{self.cursor_uuid}');
         if(cursor) {{
             cursor.style.left = '{self.mx}px';
             cursor.style.top = '{self.my}px';
@@ -155,6 +158,7 @@ class Bot():
         self.driver.execute_script(script)
 
     def click_element(self, elem:webelement.WebElement) -> None:
+        self._create_visual_cursor()        
         btn_x, btn_y = elem.location_once_scrolled_into_view["x"], elem.location_once_scrolled_into_view["y"]
         bw = elem.size["width"]
         bh = elem.size["height"]
@@ -190,7 +194,8 @@ class Bot():
                 self.actions.move_by_offset(adjusted_mov_x, adjusted_mov_y).perform()
             self.mx += adjusted_mov_x
             self.my += adjusted_mov_y
-            self.update_visual_cursor()
+            if self.opt["driver"]["show_cursor"]:
+                self._update_visual_cursor()
             #calcular click
             if click and is_mouse_inside_btn:
                 self.actions.click().perform()

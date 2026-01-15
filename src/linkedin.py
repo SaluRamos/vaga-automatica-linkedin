@@ -58,7 +58,6 @@ class LinkedinBot(Bot):
         submited_jobs = 0
         while True:
             self.wait_for_page_load()
-            self.create_visual_cursor()
             #encontra e scrolla o container da lista de jobs
             jobs = self.get_elements(3, By.CSS_SELECTOR, "div[data-job-id]")
             print(f"jobs antes de scrolar = {len(jobs)}")

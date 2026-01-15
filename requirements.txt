@@ -1,6 +1,6 @@
 undetected-chromedriver
 langdetect
-langid
 ollama
 tensorflow
+uuid
 setuptools>=60.0.0; python_version >= "3.12"
