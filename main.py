@@ -26,8 +26,8 @@ def load_options() -> dict:
     return opt
 
 def robot(opt:dict) -> None:
+    opt["driver"]["load_profile"] = False
     bot = RobotBot(opt)
-    bot.clean_chrome_profile()
     bot.start_driver()
     bot.start_actions()
     bot.solve_captcha()
@@ -36,8 +36,6 @@ def robot(opt:dict) -> None:
 
 def main(opt:dict) -> None:
     bot = LinkedinBot(opt)
-    bot.load_options()
-    bot.clean_chrome_profile()
     bot.start_driver()
     bot.start_actions()
     bot.verify_login()

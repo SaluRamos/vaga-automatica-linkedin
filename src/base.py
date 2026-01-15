@@ -54,6 +54,7 @@ class Bot():
         # Outros
         driver_options.add_argument("--remote-debugging-port=9222")
         if self.opt["driver"]["load_profile"]:
+            self.clean_chrome_profile()
             driver_options.add_argument(f"--user-data-dir={self.get_profile_path()}")
         if self.opt["driver"]["headless"]:
             driver_options.add_argument("--headless")
