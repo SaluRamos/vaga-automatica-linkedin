@@ -39,6 +39,9 @@ class Bot():
 
     def get_driver_options(self) -> uc.ChromeOptions:
         driver_options = uc.ChromeOptions()
+        # Opções que ajudam na ocultação
+        driver_options.add_argument("--disable-infobars")
+        driver_options.add_argument("--disable-blink-features=AutomationControlled")
         # Desativa o Safe Browsing (que incha o arquivo Preferences com listas de URLs)
         driver_options.add_argument("--safebrowsing-disable-auto-update")
         driver_options.add_argument("--disable-features=SafeBrowsing")
