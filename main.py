@@ -59,6 +59,7 @@ def clean_chrome_profile() -> None:
                 pass
 
 def get_driver_options() -> uc.ChromeOptions:
+    global opt
     driver_options = uc.ChromeOptions()
     # Desativa o Safe Browsing (que incha o arquivo Preferences com listas de URLs)
     driver_options.add_argument("--safebrowsing-disable-auto-update")
@@ -85,6 +86,14 @@ def get_dad(elem:webelement.WebElement, levels=1) -> webelement.WebElement:
         return elem
     dad = elem.find_element(By.XPATH, "..")
     return get_dad(dad, levels - 1)
+
+def get_element(timeout:int, by:By, value:str) -> webelement.WebElement:
+    global driver
+    return WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((by, value)))
+
+def get_elements(timeout:int, by:By, value:str) -> webelement.WebElement:
+    global driver
+    return WebDriverWait(driver, timeout).until(EC.visibility_of_all_elements_located((by, value)))
 
 def get_url_params() -> dict:
     args = {}
@@ -524,8 +533,11 @@ def robot_test() -> None:
     load_options()
     clean_chrome_profile()
     start_driver()
-    robot_test()
     driver.get("https://neal.fun/not-a-robot/")
+    #level 1
+    checkbox = get_element(5, By.CLASS_NAME, "captcha-box-checkbox-input")
+    time.sleep(10000)
+    driver.quit()
 
 def load_options() -> None:
     global opt
@@ -550,7 +562,6 @@ def main() -> None:
     except Exception as e:
         logging.error("Falha genérica sem tratamento", exc_info=True)
         time.sleep(1000000) #dar tempo de debugar
-
     driver.quit()
 
 if __name__ == "__main__":
