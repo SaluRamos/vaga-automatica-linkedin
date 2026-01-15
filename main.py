@@ -505,21 +505,9 @@ def select_resume(is_portuguese:bool, is_english:bool) -> None:
     except Exception as e:
         logging.error("Falha ao selecionar curriculo", exc_info=True)
 
-def main():
-    global driver, actions, job_url, opt
-
-    try:
-        with open("private.json", "r", encoding="utf-8") as file: #developer safety
-            opt = json.load(file)
-    except Exception as e:
-        with open("options.json", "r", encoding="utf-8") as file:
-            opt = json.load(file)
-    print(f"loaded options = {opt}")
-
+def start_driver() -> None:
+    global driver, opt
     chrome_exe_path = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe")
-    print(f"chrome exe path: {chrome_exe_path}")
-
-    clean_chrome_profile()
     driver = uc.Chrome(
         options=get_driver_options(),
         browser_executable_path=chrome_exe_path, # chrome com versão fixa na pasta bin
@@ -531,6 +519,19 @@ def main():
         h = opt["driver"]["height"]
         driver.set_window_size(h, w)
 
+def main():
+    global driver, actions, job_url, opt
+
+    try:
+        with open("private.json", "r", encoding="utf-8") as file: #developer safety
+            opt = json.load(file)
+    except Exception as e:
+        with open("options.json", "r", encoding="utf-8") as file:
+            opt = json.load(file)
+    print(f"loaded options = {opt}")
+
+    clean_chrome_profile()
+    start_driver()
     start_actions()
     verify_login()
 
