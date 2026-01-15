@@ -228,6 +228,36 @@ def click_element(elem:webelement.WebElement) -> None:
         time.sleep(0.01)
     print("Click timeout")
     
+def get_jobsearch_url() -> str:
+    params = []
+    params.append(LinkedInParams.keyword_param(opt["filters"]["keyword"]))
+    if opt["filters"]["use_job_model"]:
+        params.append(LinkedInParams.remote_param(opt["filters"]["filter_remote_job"], opt["filters"]["filter_hibrid_job"], opt["filters"]["filter_onsite_job"]))
+    if opt["filters"]["use_timelapse"]:
+        params.append(LinkedInParams.timelapse_param(604800))
+    if opt["filters"]["use_geoid"]:
+        params.append(LinkedInParams.geoid_param(opt["filters"]["geoid"]))
+    if opt["filters"]["use_max_distance"]:
+        params.append(LinkedInParams.distance_param(opt["filters"]["max_distance_in_miles"]))
+    if opt["filters"]["in_my_chain"]:
+        params.append(LinkedInParams.in_my_chain_param())
+    if opt["filters"]["low_candidates"]:
+        params.append(LinkedInParams.low_candidates_param())
+    if opt["filters"]["use_experience_level"]:
+        params.append(LinkedInParams.experience_level_param(
+            opt["filters"]["internship"], opt["filters"]["assistent"], opt["filters"]["junior"], 
+            opt["filters"]["pleno_and_senior"], opt["filters"]["director"], opt["filters"]["executive"]
+        ))
+    # Parâmetros fixos/obrigatórios
+    params.extend([
+        LinkedInParams.simplified_param(),
+        LinkedInParams.origin_param(),
+        LinkedInParams.ignore_cache_param()
+    ])
+    final_query = "&".join(params)
+    job_url = f"{job_url}{final_query}"
+    print(f"url is: {job_url}")
+    return job_url
 
 def verify_login() -> None:
     global driver
@@ -238,7 +268,6 @@ def verify_login() -> None:
         if "/feed" in driver.current_url:
             break
     print("IS LOGGED!")
-    
 
 def subscribe_to_all_jobs() -> None:
     global opt
@@ -505,35 +534,7 @@ def main():
     start_actions()
     verify_login()
 
-    params = []
-    params.append(LinkedInParams.keyword_param(opt["filters"]["keyword"]))
-    if opt["filters"]["use_job_model"]:
-        params.append(LinkedInParams.remote_param(opt["filters"]["filter_remote_job"], opt["filters"]["filter_hibrid_job"], opt["filters"]["filter_onsite_job"]))
-    if opt["filters"]["use_timelapse"]:
-        params.append(LinkedInParams.timelapse_param(604800))
-    if opt["filters"]["use_geoid"]:
-        params.append(LinkedInParams.geoid_param(opt["filters"]["geoid"]))
-    if opt["filters"]["use_max_distance"]:
-        params.append(LinkedInParams.distance_param(opt["filters"]["max_distance_in_miles"]))
-    if opt["filters"]["in_my_chain"]:
-        params.append(LinkedInParams.in_my_chain_param())
-    if opt["filters"]["low_candidates"]:
-        params.append(LinkedInParams.low_candidates_param())
-    if opt["filters"]["use_experience_level"]:
-        params.append(LinkedInParams.experience_level_param(
-            opt["filters"]["internship"], opt["filters"]["assistent"], opt["filters"]["junior"], 
-            opt["filters"]["pleno_and_senior"], opt["filters"]["director"], opt["filters"]["executive"]
-        ))
-    # Parâmetros fixos/obrigatórios
-    params.extend([
-        LinkedInParams.simplified_param(),
-        LinkedInParams.origin_param(),
-        LinkedInParams.ignore_cache_param()
-    ])
-
-    final_query = "&".join(params)
-    job_url = f"{job_url}{final_query}"
-    print(f"url is: {job_url}")
+    job_url = get_jobsearch_url()
     driver.get(job_url)
 
     try:
