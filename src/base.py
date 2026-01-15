@@ -61,7 +61,12 @@ class Bot():
         if self.opt["driver"]["maximized"]:
             driver_options.add_argument("--start-maximized")
         return driver_options
-    
+
+    def wait_for_page_load(self, timeout: int = 10) -> None:
+        WebDriverWait(self.driver, timeout).until(
+            lambda d: d.execute_script("return document.readyState") == "complete"
+        )
+
     def clean_chrome_profile(self) -> None:
         profile_path = self.get_profile_path()
         # Remove arquivos temporários (.tmp) em qualquer subpasta do perfil

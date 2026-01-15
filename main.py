@@ -29,13 +29,9 @@ def robot(opt:dict) -> None:
     bot = RobotBot(opt)
     bot.clean_chrome_profile()
     bot.start_driver()
-    #https://bot.sannysoft.com/
-    #https://pixelscan.net/
-    #https://nowsecure.nl
-    bot.driver.get("https://neal.fun/not-a-robot/")
-    #level 1
-    checkbox = bot.get_element(5, By.CLASS_NAME, "captcha-box-checkbox-input")
-    time.sleep(10000)
+    bot.start_actions()
+    bot.solve_captcha()
+    time.sleep(10000) #dar tempo de debugar
     bot.driver.quit()
 
 def main(opt:dict) -> None:
