@@ -519,25 +519,32 @@ def start_driver() -> None:
         h = opt["driver"]["height"]
         driver.set_window_size(h, w)
 
-def main():
-    global driver, actions, job_url, opt
+def robot_test() -> None:
+    global driver
+    load_options()
+    clean_chrome_profile()
+    start_driver()
+    robot_test()
+    driver.get("https://neal.fun/not-a-robot/")
 
+def load_options() -> None:
+    global opt
     try:
         with open("private.json", "r", encoding="utf-8") as file: #developer safety
             opt = json.load(file)
     except Exception as e:
         with open("options.json", "r", encoding="utf-8") as file:
             opt = json.load(file)
-    print(f"loaded options = {opt}")
 
+def main() -> None:
+    global driver, actions, job_url, opt
+    load_options()
     clean_chrome_profile()
     start_driver()
     start_actions()
     verify_login()
-
     job_url = get_jobsearch_url()
     driver.get(job_url)
-
     try:
         subscribe_to_all_jobs()
     except Exception as e:
