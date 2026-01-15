@@ -10,17 +10,16 @@ from selenium.webdriver.support import expected_conditions as EC
 #native libs
 import os
 import glob
-import json
 import random
 import math
 import time
 
 class Bot():
 
-    def __init__(self):
+    def __init__(self, opt:dict):
+        self.opt = opt
         self.driver = None
         self.actions = None
-        self.opt = {}
         self.mouse_mlp_model = tf.keras.models.load_model("models/mouse_mlp.keras")
         self.mx = 0
         self.my = 0
@@ -80,14 +79,6 @@ class Bot():
 
     def get_profile_path(self) -> str:
         return os.path.join(os.getcwd(), "chrome_profile")
-    
-    def load_options(self) -> None:
-        try:
-            with open("private.json", "r", encoding="utf-8") as file: #developer safety
-                self.opt = json.load(file)
-        except Exception as e:
-            with open("options.json", "r", encoding="utf-8") as file:
-                self.opt = json.load(file)
 
     def get_dad(self, elem:webelement.WebElement, levels=1) -> webelement.WebElement:
         if levels == 0:

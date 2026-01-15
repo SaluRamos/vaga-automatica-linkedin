@@ -8,6 +8,7 @@ import time
 import ctypes
 import sys
 import logging
+import json
 
 def require_admin() -> None:
     if not ctypes.windll.shell32.IsUserAnAdmin():
@@ -15,9 +16,17 @@ def require_admin() -> None:
         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
         sys.exit()
 
-def robot_test() -> None:
-    bot = RobotBot()
-    bot.load_options()
+def load_options() -> dict:
+    try:
+        with open("private.json", "r", encoding="utf-8") as file: #developer safety
+            opt = json.load(file)
+    except Exception as e:
+        with open("options.json", "r", encoding="utf-8") as file:
+            opt = json.load(file)
+    return opt
+
+def robot(opt:dict) -> None:
+    bot = RobotBot(opt)
     bot.clean_chrome_profile()
     bot.start_driver()
     #https://bot.sannysoft.com/
@@ -29,8 +38,8 @@ def robot_test() -> None:
     time.sleep(10000)
     bot.driver.quit()
 
-def main() -> None:
-    bot = LinkedinBot()
+def main(opt:dict) -> None:
+    bot = LinkedinBot(opt)
     bot.load_options()
     bot.clean_chrome_profile()
     bot.start_driver()
@@ -45,4 +54,8 @@ def main() -> None:
     bot.driver.quit()
 
 if __name__ == "__main__":
-    main()
+    opt = load_options()
+    if opt["actual_bot"] == "linkedin":
+        main(opt)
+    if opt["actual_bot"] == "robot":
+        robot(opt)

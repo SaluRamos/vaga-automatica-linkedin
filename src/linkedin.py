@@ -13,8 +13,8 @@ import logging
 
 class LinkedinBot(Bot):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, opt:dict):
+        super().__init__(opt)
 
     def get_actual_job_id(self) -> str:
         return self.get_url_params()["currentJobId"]
