@@ -90,9 +90,13 @@ class Bot():
         return self.get_dad(dad, levels - 1)
 
     def get_element(self, timeout:int, by:By, value:str) -> webelement.WebElement:
+        if timeout == 0:
+            return self.driver.find_element(by, value)
         return WebDriverWait(self.driver, timeout).until(EC.visibility_of_element_located((by, value)))
 
     def get_elements(self, timeout:int, by:By, value:str) -> webelement.WebElement:
+        if timeout == 0:
+            return self.driver.find_elements(by, value)
         return WebDriverWait(self.driver, timeout).until(EC.visibility_of_all_elements_located((by, value)))
 
     def get_url_params(self) -> dict:
