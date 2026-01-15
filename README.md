@@ -1,6 +1,8 @@
 ## A vaga vai chegar
   
 ![alt text](readme_images/video.gif)  
+
+https://github.com/user-attachments/assets/51413d1d-b1f6-4246-8e03-f940ad40accd
   
 Nos últimos dias meu feed foi invadido pela propaganda do vaga automatica.  
 Vi que tinham muitas reclamações no reclameaqui, então decidi fazer minha própria ferramenta.  
