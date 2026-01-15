@@ -29,7 +29,6 @@ def robot(opt:dict) -> None:
     opt["driver"]["load_profile"] = False
     bot = RobotBot(opt)
     bot.start_driver()
-    bot.start_actions()
     bot.solve_captcha()
     time.sleep(10000) #dar tempo de debugar
     bot.driver.quit()
@@ -37,7 +36,6 @@ def robot(opt:dict) -> None:
 def main(opt:dict) -> None:
     bot = LinkedinBot(opt)
     bot.start_driver()
-    bot.start_actions()
     bot.verify_login()
     bot.driver.get(bot.get_jobsearch_url())
     try:

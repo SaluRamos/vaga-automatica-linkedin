@@ -20,7 +20,6 @@ class Bot():
     def __init__(self, opt:dict):
         self.opt = opt
         self.driver = None
-        self.actions = None
         self.mouse_mlp_model = tf.keras.models.load_model("models/mouse_mlp.keras")
         self.mx = 0
         self.my = 0
@@ -115,16 +114,6 @@ class Bot():
             name = buffer[0]
             args[name] = buffer[1]
         return args
-    
-    def start_actions(self) -> None:
-        window_size = self.driver.get_window_size()
-        width = window_size['width']
-        height = window_size['height']
-        self.mx = random.randrange(0, width)
-        self.my = random.randrange(0, height)
-        self.actions = ActionChains(self.driver)
-        self.actions.move_by_offset(self.mx, self.my).perform()
-        print(f"Mouse iniciado em: {self.mx}, {self.my}")
 
     def _create_visual_cursor(self) -> None:
         if self.opt["driver"]["show_cursor"] and not hasattr(self, "cursor_created"):
@@ -158,19 +147,24 @@ class Bot():
         self.driver.execute_script(script)
 
     def click_element(self, elem:webelement.WebElement) -> None:
-        self._create_visual_cursor()        
-        btn_x, btn_y = elem.location_once_scrolled_into_view["x"], elem.location_once_scrolled_into_view["y"]
-        bw = elem.size["width"]
-        bh = elem.size["height"]
+        self._create_visual_cursor()
+        loc = elem.location_once_scrolled_into_view #automatic scroll
+        time.sleep(1)
+        btn_x, btn_y = elem.rect["x"], elem.rect["y"]
+        bw, bh = elem.size["width"], elem.size["height"]
+        
         window_size = self.driver.get_window_size()
         window_width = window_size['width']
         window_height = window_size['height']
-        max_steps = 200 # Trava de segurança para não rodar infinito
+        max_steps = 50 # Trava de segurança para não rodar infinito
+        target_x = int(btn_x + bw/2)
+        target_y = int(btn_y + bh/2)
+        print(f"TARGET IS {target_x}, {target_y}")
         steps = 0
+        action = ActionChains(self.driver)
         while steps < max_steps:
+            steps += 1
             is_mouse_inside_btn = (btn_x <= self.mx <= btn_x + bw and btn_y <= self.my <= btn_y + bh)
-            target_x = btn_x + bw/2
-            target_y = btn_y + bh/2
             offset_x = (target_x - self.mx)/window_width
             offset_y = (target_y - self.my)/window_height
             #inferencia
@@ -181,7 +175,7 @@ class Bot():
             mov_y = math.ceil(mov_y_n[0][0] * window_height)
             # threshold de clique
             click = click_p[0][0] < 0.01
-            # intenção e clamp (crome não aceita coordenadas negativas)
+            # intenção e clamp (chrome não aceita coordenadas negativas)
             intended_x = self.mx + mov_x
             intended_y = self.my + mov_y
             new_mx = max(0, min(intended_x, window_width - 1))
@@ -191,18 +185,17 @@ class Bot():
             #efetuar ação da IA
             print(f"{self.mx}, {self.my}, {mov_x}, {mov_y}, {is_mouse_inside_btn}, {click_p[0][0]}")
             if adjusted_mov_x != 0 or adjusted_mov_y != 0:
-                self.actions.move_by_offset(adjusted_mov_x, adjusted_mov_y).perform()
+                action.move_by_offset(adjusted_mov_x, adjusted_mov_y)
             self.mx += adjusted_mov_x
             self.my += adjusted_mov_y
             if self.opt["driver"]["show_cursor"]:
                 self._update_visual_cursor()
             #calcular click
             if click and is_mouse_inside_btn:
-                self.actions.click().perform()
+                action.click().perform()
                 print("Click executado")
                 return
-            time.sleep(0.01)
-        print("Click timeout")
+        raise Exception("Click timeout")
 
     #melhorar isso para permitir scroll para cima também
     def scroll_element(self, element:webelement.WebElement, min_steps:int=3, max_steps:int=6) -> None:
