@@ -229,15 +229,16 @@ def click_element(elem:webelement.WebElement) -> None:
     print("Click timeout")
     
 
-def verify_login() -> bool:
+def verify_login() -> None:
     global driver
-    #se estiver logado, deve ser redirecionado para o feed
-    if driver.current_url != "https://www.linkedin.com/":
-        driver.get("https://www.linkedin.com") 
-    time.sleep(1)
-    if "/feed" in driver.current_url:
-        return True
-    return False
+    driver.get("https://www.linkedin.com") 
+    while True:
+        #se estiver logado, deve ser redirecionado para o feed
+        time.sleep(1)
+        if "/feed" in driver.current_url:
+            break
+    print("IS LOGGED!")
+    
 
 def subscribe_to_all_jobs() -> None:
     global opt
@@ -502,12 +503,7 @@ def main():
         driver.set_window_size(h, w)
 
     start_actions()
-    
-    #colocar isso dentro do verify_login
-    is_logged = False
-    while not is_logged:
-        is_logged = verify_login()
-    print("IS LOGGED!")
+    verify_login()
 
     params = []
     params.append(LinkedInParams.keyword_param(opt["filters"]["keyword"]))
