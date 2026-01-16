@@ -6,10 +6,9 @@
 
 ![alt text](readme/image4.png)
 
-### ☕ Apoie o Projeto
-
-Por favor, não hesite em colaborar com o projeto. 
-Deixe sua STAR como forma de agradecimento 👍 
+### Apoie o Projeto ☕
+  
+Por favor, não hesite em colaborar com o projeto. Deixe sua ⭐  
   
 | Rede | Ícone | Endereço |
 | :--- | :---: | :--- |
