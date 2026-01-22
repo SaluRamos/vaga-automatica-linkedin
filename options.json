@@ -19,7 +19,8 @@
         "auto_open_devtools":false,
         "maximized":false,
         "height":700,
-        "width":1200
+        "width":1200,
+        "profile_name":"chrome_profile"
     },
     "filters":{
         "apply_to_english_vacancy":true,

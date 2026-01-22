@@ -14,18 +14,32 @@ import glob
 import random
 import math
 import time
+import win32api
 
 class Bot():
 
     def __init__(self, opt:dict):
         self.opt = opt
         self.driver = None
-        self.mouse_mlp_model = tf.keras.models.load_model("models/mouse_mlp.keras")
+        model_path = "models/mouse_mlp.keras"
+        if not os.path.exists(model_path):
+            model_path = "../" + model_path
+        print(model_path)
+        self.mouse_mlp_model = tf.keras.models.load_model(model_path, compile=False)
         self.mx = 0
         self.my = 0
     
     def start_driver(self) -> None:
         chrome_exe_path = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe")
+        chrome_for_testing_version = self.get_chrome_version_number(chrome_exe_path)
+        print(f"chrome for testing = '{chrome_for_testing_version}'")
+        undetected_chrome_driver_path = "%AppData%/undetected_chromedriver/undetected_chromedriver.exe"
+        undetected_chrome_driver_path = os.path.expandvars(undetected_chrome_driver_path)
+        undetected_chrome_driver_version = self.get_chrome_version_number(undetected_chrome_driver_path)
+        print(f"undetected chrome = '{undetected_chrome_driver_version}'")
+        if undetected_chrome_driver_version != chrome_for_testing_version:
+            raise Exception("DRIVERS DIFFER!")
+
         self.driver = uc.Chrome(
             options=self.get_driver_options(),
             browser_executable_path=chrome_exe_path, # chrome com versão fixa na pasta bin
@@ -36,6 +50,16 @@ class Bot():
             w = self.opt["driver"]["width"]
             h = self.opt["driver"]["height"]
             self.driver.set_window_size(w, h)
+
+    def get_chrome_version_number(self, file_path) -> str:
+        try:
+            info = win32api.GetFileVersionInfo(file_path, "\\")
+            ms = info['FileVersionMS']
+            ls = info['FileVersionLS']
+            version = f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
+            return version
+        except Exception as e:
+            return f"Erro ao obter versão: {e}"
 
     def get_driver_options(self) -> uc.ChromeOptions:
         driver_options = uc.ChromeOptions()
@@ -88,7 +112,7 @@ class Bot():
                     pass
 
     def get_profile_path(self) -> str:
-        return os.path.join(os.getcwd(), "chrome_profile")
+        return os.path.join(os.getcwd(), f'profiles/{self.opt["driver"]["profile_name"]}')
 
     def get_dad(self, elem:webelement.WebElement, levels=1) -> webelement.WebElement:
         if levels == 0:
