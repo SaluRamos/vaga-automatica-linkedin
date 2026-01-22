@@ -1,8 +1,7 @@
 #modules
-from src.linkedin import LinkedinBot
-from src.robot import RobotBot
-#libs
-from selenium.webdriver.common.by import By
+from src.bots.linkedin import LinkedinBot
+from src.bots.robot import RobotBot
+from src.bots.github import GithubBot
 #native libs
 import time
 import ctypes
