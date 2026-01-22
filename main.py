@@ -1,7 +1,6 @@
 #modules
 from src.bots.linkedin import LinkedinBot
 from src.bots.robot import RobotBot
-from src.bots.github import GithubBot
 #native libs
 import time
 import ctypes
@@ -48,5 +47,7 @@ if __name__ == "__main__":
     opt = load_options()
     if opt["actual_bot"] == "linkedin":
         main(opt)
-    if opt["actual_bot"] == "robot":
+    elif opt["actual_bot"] == "robot":
         robot(opt)
+    else:
+        raise Exception("No 'actual_bot' config recognized")
