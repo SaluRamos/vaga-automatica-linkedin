@@ -24,7 +24,7 @@
         "profile_name":"chrome_profile",
         "use_ai_cursor":false
     },
-    "filters":{
+    "linkedin":{
         "apply_to_english_vacancy":true,
         "apply_to_portuguese_vacancy":true,
         "keyword":"backend",

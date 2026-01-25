@@ -21,23 +21,23 @@ class LinkedinBot(Bot):
     
     def get_jobsearch_url(self) -> str:
         params = []
-        params.append(LinkedInParams.keyword_param(self.opt["filters"]["keyword"]))
-        if self.opt["filters"]["use_job_model"]:
-            params.append(LinkedInParams.remote_param(self.opt["filters"]["filter_remote_job"], self.opt["filters"]["filter_hibrid_job"], self.opt["filters"]["filter_onsite_job"]))
-        if self.opt["filters"]["use_timelapse"]:
+        params.append(LinkedInParams.keyword_param(self.opt["linkedin"]["keyword"]))
+        if self.opt["linkedin"]["use_job_model"]:
+            params.append(LinkedInParams.remote_param(self.opt["linkedin"]["filter_remote_job"], self.opt["linkedin"]["filter_hibrid_job"], self.opt["linkedin"]["filter_onsite_job"]))
+        if self.opt["linkedin"]["use_timelapse"]:
             params.append(LinkedInParams.timelapse_param(604800))
-        if self.opt["filters"]["use_geoid"]:
-            params.append(LinkedInParams.geoid_param(self.opt["filters"]["geoid"]))
-        if self.opt["filters"]["use_max_distance"]:
-            params.append(LinkedInParams.distance_param(self.opt["filters"]["max_distance_in_miles"]))
-        if self.opt["filters"]["in_my_chain"]:
+        if self.opt["linkedin"]["use_geoid"]:
+            params.append(LinkedInParams.geoid_param(self.opt["linkedin"]["geoid"]))
+        if self.opt["linkedin"]["use_max_distance"]:
+            params.append(LinkedInParams.distance_param(self.opt["linkedin"]["max_distance_in_miles"]))
+        if self.opt["linkedin"]["in_my_chain"]:
             params.append(LinkedInParams.in_my_chain_param())
-        if self.opt["filters"]["low_candidates"]:
+        if self.opt["linkedin"]["low_candidates"]:
             params.append(LinkedInParams.low_candidates_param())
-        if self.opt["filters"]["use_experience_level"]:
+        if self.opt["linkedin"]["use_experience_level"]:
             params.append(LinkedInParams.experience_level_param(
-                self.opt["filters"]["internship"], self.opt["filters"]["assistent"], self.opt["filters"]["junior"], 
-                self.opt["filters"]["pleno_and_senior"], self.opt["filters"]["director"], self.opt["filters"]["executive"]
+                self.opt["linkedin"]["internship"], self.opt["linkedin"]["assistent"], self.opt["linkedin"]["junior"], 
+                self.opt["linkedin"]["pleno_and_senior"], self.opt["linkedin"]["director"], self.opt["linkedin"]["executive"]
             ))
         # Parâmetros fixos/obrigatórios
         params.extend([
@@ -122,9 +122,9 @@ class LinkedinBot(Bot):
                 # lógica para se deve ou não candidatar
                 must_apply = False
                 if is_simplified:
-                    if self.opt["filters"]["apply_to_english_vacancy"] and is_english:
+                    if self.opt["linkedin"]["apply_to_english_vacancy"] and is_english:
                         must_apply = True
-                    if self.opt["filters"]["apply_to_portuguese_vacancy"] and is_portuguese:
+                    if self.opt["linkedin"]["apply_to_portuguese_vacancy"] and is_portuguese:
                         must_apply = True
                 #inscrever no job
                 if must_apply:
@@ -168,8 +168,8 @@ class LinkedinBot(Bot):
                             print("CONCLUIDO")
                             break
                     #só deve esperar se efetuou uma candidatura
-                    print(f'ESPERANDO {self.opt["filters"]["sleep_time_between_applications"]} segundos até candidatar-se a próxima vaga')
-                    time.sleep(self.opt["filters"]["sleep_time_between_applications"])
+                    print(f'ESPERANDO {self.opt["linkedin"]["sleep_time_between_applications"]} segundos até candidatar-se a próxima vaga')
+                    time.sleep(self.opt["linkedin"]["sleep_time_between_applications"])
                 else:
                     print("IGNORANDO JOB, NÃO É SIMPLIFICADO ou NÃO É PORTUGUES/INGLÊS")
                 submited_jobs = submited_jobs + 1
