@@ -75,7 +75,7 @@ class Bot():
         # Outros
         driver_options.add_argument("--remote-debugging-port=9222")
         if self.opt["driver"]["load_profile"]:
-            self.clean_chrome_profile()
+            self._clean_chrome_profile()
             driver_options.add_argument(f"--user-data-dir={self.get_profile_path()}")
         if self.opt["driver"]["headless"]:
             driver_options.add_argument("--headless")
@@ -90,7 +90,7 @@ class Bot():
             lambda d: d.execute_script("return document.readyState") == "complete"
         )
 
-    def clean_chrome_profile(self) -> None:
+    def _clean_chrome_profile(self) -> None:
         profile_path = self.get_profile_path()
         # Remove arquivos temporários (.tmp) em qualquer subpasta do perfil
         tmp_files = glob.glob(os.path.join(profile_path, "**/*.tmp"), recursive=True)
