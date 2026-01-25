@@ -50,7 +50,6 @@ def linkedin(opt:dict) -> None:
     bot = LinkedinBot(opt)
     bot.start_driver()
     bot.wait_login()
-    bot.driver.get(bot.get_jobsearch_url())
     bot.subscribe_to_all_jobs()
     time.sleep(1_000_000) #dar tempo de debugar
     bot.driver.quit()

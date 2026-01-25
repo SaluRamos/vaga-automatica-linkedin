@@ -52,6 +52,7 @@ class LinkedinBot(Bot):
         return job_url
     
     def subscribe_to_all_jobs(self) -> None:
+        self.driver.get(self.get_jobsearch_url())
         is_premium = True
         actual_page = 1
         actual_job = 1
