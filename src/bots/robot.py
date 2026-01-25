@@ -14,7 +14,6 @@ class RobotBot(Bot):
         #https://nowsecure.nl
         self.driver.get("https://neal.fun/not-a-robot/")
         self.wait_for_page_load()
-        self.create_visual_cursor()
         #level 1
         checkbox = self.get_element(5, By.CLASS_NAME, "captcha-box-checkbox-input")
         self.click_element(checkbox)
