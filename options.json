@@ -19,8 +19,6 @@
         "headless":false,
         "auto_open_devtools":false,
         "maximized":false,
-        "height":700,
-        "width":1200,
         "profile_name":"chrome_profile",
         "use_ai_cursor":false
     },

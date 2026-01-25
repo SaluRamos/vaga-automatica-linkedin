@@ -25,13 +25,18 @@ def load_options() -> dict:
     return opt
 
 def indeed(opt:dict) -> None:
+    opt["driver"]["width"] = 1600
+    opt["driver"]["height"] = 900
     bot = IndeedBot(opt)
     bot.start_driver()
+    bot.wait_login()
     bot.subscribe_to_all_jobs()
     time.sleep(1_000_000) #dar tempo de debugar
     bot.driver.quit()
 
 def robot(opt:dict) -> None:
+    opt["driver"]["width"] = 1200
+    opt["driver"]["height"] = 700
     opt["driver"]["load_profile"] = False
     bot = RobotBot(opt)
     bot.start_driver()
@@ -39,22 +44,21 @@ def robot(opt:dict) -> None:
     time.sleep(1_000_000) #dar tempo de debugar
     bot.driver.quit()
 
-def main(opt:dict) -> None:
+def linkedin(opt:dict) -> None:
+    opt["driver"]["width"] = 1200
+    opt["driver"]["height"] = 700
     bot = LinkedinBot(opt)
     bot.start_driver()
-    bot.verify_login()
+    bot.wait_login()
     bot.driver.get(bot.get_jobsearch_url())
-    try:
-        bot.subscribe_to_all_jobs()
-    except Exception as e:
-        logging.error("Falha genérica sem tratamento", exc_info=True)
-        time.sleep(1_000_000) #dar tempo de debugar
+    bot.subscribe_to_all_jobs()
+    time.sleep(1_000_000) #dar tempo de debugar
     bot.driver.quit()
 
 if __name__ == "__main__":
     opt = load_options()
     if opt["actual_bot"] == "linkedin":
-        main(opt)
+        linkedin(opt)
     elif opt["actual_bot"] == "robot":
         robot(opt)
     elif opt["actual_bot"] == "indeed":

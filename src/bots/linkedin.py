@@ -207,7 +207,7 @@ class LinkedinBot(Bot):
         )
         return response['message']['content']
 
-    def verify_login(self) -> None:
+    def wait_login(self) -> None:
         self.driver.get("https://www.linkedin.com") 
         while True:
             #se estiver logado, deve ser redirecionado para o feed
