@@ -137,8 +137,8 @@ class Bot():
         return args
 
     def _create_visual_cursor(self) -> None:
-        if self.opt["driver"]["show_cursor"] and not hasattr(self, "cursor_created"):
-            self.cursor_created = True
+        if self.opt["driver"]["show_cursor"] and not hasattr(self, "_cursor_created"):
+            self._cursor_created = True
             self._cursor_uuid = uuid.uuid4()
             script = f"""
             var cursor = document.createElement('div');
