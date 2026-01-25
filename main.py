@@ -28,7 +28,7 @@ def indeed(opt:dict) -> None:
     bot = IndeedBot(opt)
     bot.start_driver()
     bot.subscribe_to_all_jobs()
-    time.sleep(10000000) #dar tempo de debugar
+    time.sleep(1_000_000) #dar tempo de debugar
     bot.driver.quit()
 
 def robot(opt:dict) -> None:
@@ -36,7 +36,7 @@ def robot(opt:dict) -> None:
     bot = RobotBot(opt)
     bot.start_driver()
     bot.solve_captcha()
-    time.sleep(10000) #dar tempo de debugar
+    time.sleep(1_000_000) #dar tempo de debugar
     bot.driver.quit()
 
 def main(opt:dict) -> None:
@@ -48,7 +48,7 @@ def main(opt:dict) -> None:
         bot.subscribe_to_all_jobs()
     except Exception as e:
         logging.error("Falha genérica sem tratamento", exc_info=True)
-        time.sleep(1000000) #dar tempo de debugar
+        time.sleep(1_000_000) #dar tempo de debugar
     bot.driver.quit()
 
 if __name__ == "__main__":
