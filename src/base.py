@@ -14,6 +14,7 @@ import glob
 import random
 import time
 import win32api
+import math
 
 class Bot():
 
@@ -22,9 +23,9 @@ class Bot():
         self.driver = None
         model_path = "../models/mouse_mlp.keras"
         if opt["driver"]["use_ai_cursor"]:
-            self.mouse_model = tf.keras.models.load_model(model_path, compile=False)
-            self.mx = 0
-            self.my = 0
+            self._mouse_model = tf.keras.models.load_model(model_path, compile=False)
+            self._mx = 0
+            self._my = 0
     
     def start_driver(self) -> None:
         chrome_exe_path = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe")
@@ -161,8 +162,8 @@ class Bot():
         script = f"""
         var cursor = document.getElementById('{self._cursor_uuid}');
         if(cursor) {{
-            cursor.style.left = '{self.mx}px';
-            cursor.style.top = '{self.my}px';
+            cursor.style.left = '{self._mx}px';
+            cursor.style.top = '{self._my}px';
         }}
         """
         self.driver.execute_script(script)
@@ -186,9 +187,9 @@ class Bot():
         action.move_to_element(elem).click().perform()
         # while steps < max_steps:
         #     steps += 1
-        #     is_mouse_inside_btn = (btn_x <= self.mx <= btn_x + bw and btn_y <= self.my <= btn_y + bh)
-        #     offset_x = (target_x - self.mx)/window_width
-        #     offset_y = (target_y - self.my)/window_height
+        #     is_mouse_inside_btn = (btn_x <= self._mx <= btn_x + bw and btn_y <= self._my <= btn_y + bh)
+        #     offset_x = (target_x - self._mx)/window_width
+        #     offset_y = (target_y - self._my)/window_height
         #     #inferencia
         #     inp = tf.convert_to_tensor([[offset_x, offset_y, is_mouse_inside_btn]], dtype=tf.float32)
         #     mov_x_n, mov_y_n, click_p = self.mouse_mlp_model.predict(inp, verbose=0)
@@ -198,18 +199,18 @@ class Bot():
         #     # threshold de clique
         #     click = click_p[0][0] < 0.01
         #     # intenção e clamp (chrome não aceita coordenadas negativas)
-        #     intended_x = self.mx + mov_x
-        #     intended_y = self.my + mov_y
+        #     intended_x = self._mx + mov_x
+        #     intended_y = self._my + mov_y
         #     new_mx = max(0, min(intended_x, window_width - 1))
         #     new_my = max(0, min(intended_y, window_height - 1))
-        #     adjusted_mov_x = new_mx - self.mx
-        #     adjusted_mov_y = new_my - self.my
+        #     adjusted_mov_x = new_mx - self._mx
+        #     adjusted_mov_y = new_my - self._my
         #     #efetuar ação da IA
-        #     print(f"{self.mx}, {self.my}, {mov_x}, {mov_y}, {is_mouse_inside_btn}, {click_p[0][0]}")
+        #     print(f"{self._mx}, {self._my}, {mov_x}, {mov_y}, {is_mouse_inside_btn}, {click_p[0][0]}")
         #     if adjusted_mov_x != 0 or adjusted_mov_y != 0:
         #         action.move_by_offset(adjusted_mov_x, adjusted_mov_y)
-        #     self.mx += adjusted_mov_x
-        #     self.my += adjusted_mov_y
+        #     self._mx += adjusted_mov_x
+        #     self._my += adjusted_mov_y
         #     if self.opt["driver"]["show_cursor"]:
         #         self._update_visual_cursor()
         #     #calcular click
