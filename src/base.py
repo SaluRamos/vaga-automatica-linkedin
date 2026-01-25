@@ -12,7 +12,6 @@ import uuid
 import os
 import glob
 import random
-import math
 import time
 import win32api
 
@@ -21,13 +20,11 @@ class Bot():
     def __init__(self, opt:dict):
         self.opt = opt
         self.driver = None
-        model_path = "models/mouse_mlp.keras"
-        if not os.path.exists(model_path):
-            model_path = "../" + model_path
-        print(model_path)
-        self.mouse_mlp_model = tf.keras.models.load_model(model_path, compile=False)
-        self.mx = 0
-        self.my = 0
+        model_path = "../models/mouse_mlp.keras"
+        if opt["driver"]["use_ai_cursor"]:
+            self.mouse_model = tf.keras.models.load_model(model_path, compile=False)
+            self.mx = 0
+            self.my = 0
     
     def start_driver(self) -> None:
         chrome_exe_path = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe")
@@ -186,40 +183,41 @@ class Bot():
         print(f"TARGET IS {target_x}, {target_y}")
         steps = 0
         action = ActionChains(self.driver)
-        while steps < max_steps:
-            steps += 1
-            is_mouse_inside_btn = (btn_x <= self.mx <= btn_x + bw and btn_y <= self.my <= btn_y + bh)
-            offset_x = (target_x - self.mx)/window_width
-            offset_y = (target_y - self.my)/window_height
-            #inferencia
-            inp = tf.convert_to_tensor([[offset_x, offset_y, is_mouse_inside_btn]], dtype=tf.float32)
-            mov_x_n, mov_y_n, click_p = self.mouse_mlp_model.predict(inp, verbose=0)
-            # desnormaliza movimento
-            mov_x = math.ceil(mov_x_n[0][0] * window_width)
-            mov_y = math.ceil(mov_y_n[0][0] * window_height)
-            # threshold de clique
-            click = click_p[0][0] < 0.01
-            # intenção e clamp (chrome não aceita coordenadas negativas)
-            intended_x = self.mx + mov_x
-            intended_y = self.my + mov_y
-            new_mx = max(0, min(intended_x, window_width - 1))
-            new_my = max(0, min(intended_y, window_height - 1))
-            adjusted_mov_x = new_mx - self.mx
-            adjusted_mov_y = new_my - self.my
-            #efetuar ação da IA
-            print(f"{self.mx}, {self.my}, {mov_x}, {mov_y}, {is_mouse_inside_btn}, {click_p[0][0]}")
-            if adjusted_mov_x != 0 or adjusted_mov_y != 0:
-                action.move_by_offset(adjusted_mov_x, adjusted_mov_y)
-            self.mx += adjusted_mov_x
-            self.my += adjusted_mov_y
-            if self.opt["driver"]["show_cursor"]:
-                self._update_visual_cursor()
-            #calcular click
-            if click and is_mouse_inside_btn:
-                action.click().perform()
-                print("Click executado")
-                return
-        raise Exception("Click timeout")
+        action.move_to_element(elem).click().perform()
+        # while steps < max_steps:
+        #     steps += 1
+        #     is_mouse_inside_btn = (btn_x <= self.mx <= btn_x + bw and btn_y <= self.my <= btn_y + bh)
+        #     offset_x = (target_x - self.mx)/window_width
+        #     offset_y = (target_y - self.my)/window_height
+        #     #inferencia
+        #     inp = tf.convert_to_tensor([[offset_x, offset_y, is_mouse_inside_btn]], dtype=tf.float32)
+        #     mov_x_n, mov_y_n, click_p = self.mouse_mlp_model.predict(inp, verbose=0)
+        #     # desnormaliza movimento
+        #     mov_x = math.ceil(mov_x_n[0][0] * window_width)
+        #     mov_y = math.ceil(mov_y_n[0][0] * window_height)
+        #     # threshold de clique
+        #     click = click_p[0][0] < 0.01
+        #     # intenção e clamp (chrome não aceita coordenadas negativas)
+        #     intended_x = self.mx + mov_x
+        #     intended_y = self.my + mov_y
+        #     new_mx = max(0, min(intended_x, window_width - 1))
+        #     new_my = max(0, min(intended_y, window_height - 1))
+        #     adjusted_mov_x = new_mx - self.mx
+        #     adjusted_mov_y = new_my - self.my
+        #     #efetuar ação da IA
+        #     print(f"{self.mx}, {self.my}, {mov_x}, {mov_y}, {is_mouse_inside_btn}, {click_p[0][0]}")
+        #     if adjusted_mov_x != 0 or adjusted_mov_y != 0:
+        #         action.move_by_offset(adjusted_mov_x, adjusted_mov_y)
+        #     self.mx += adjusted_mov_x
+        #     self.my += adjusted_mov_y
+        #     if self.opt["driver"]["show_cursor"]:
+        #         self._update_visual_cursor()
+        #     #calcular click
+        #     if click and is_mouse_inside_btn:
+        #         action.click().perform()
+        #         print("Click executado")
+        #         return
+        # raise Exception("Click timeout")
 
     #melhorar isso para permitir scroll para cima também
     def scroll_element(self, element:webelement.WebElement, min_steps:int=3, max_steps:int=6) -> None:

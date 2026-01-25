@@ -6,7 +6,8 @@
         "cellphone":"123456-7890",
         "address":"Xique-Xique, Bahia, Brasil",
         "base_years_of_experience":"5",
-        "base_salary":"15000"
+        "base_salary":"15000",
+        "cpf":"12345678901"
     },
     "print": {
         "system_prompt":false,
@@ -20,7 +21,8 @@
         "maximized":false,
         "height":700,
         "width":1200,
-        "profile_name":"chrome_profile"
+        "profile_name":"chrome_profile",
+        "use_ai_cursor":false
     },
     "filters":{
         "apply_to_english_vacancy":true,
