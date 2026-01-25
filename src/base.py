@@ -28,11 +28,11 @@ class Bot():
     
     def start_driver(self) -> None:
         chrome_exe_path = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe")
-        chrome_for_testing_version = self.get_chrome_version_number(chrome_exe_path)
+        chrome_for_testing_version = self._get_chrome_version_number(chrome_exe_path)
         print(f"chrome for testing = '{chrome_for_testing_version}'")
         undetected_chrome_driver_path = "%AppData%/undetected_chromedriver/undetected_chromedriver.exe"
         undetected_chrome_driver_path = os.path.expandvars(undetected_chrome_driver_path)
-        undetected_chrome_driver_version = self.get_chrome_version_number(undetected_chrome_driver_path)
+        undetected_chrome_driver_version = self._get_chrome_version_number(undetected_chrome_driver_path)
         print(f"undetected chrome = '{undetected_chrome_driver_version}'")
         if undetected_chrome_driver_version != chrome_for_testing_version:
             raise Exception("DRIVERS DIFFER!")
@@ -48,7 +48,7 @@ class Bot():
             h = self.opt["driver"]["height"]
             self.driver.set_window_size(w, h)
 
-    def get_chrome_version_number(self, file_path) -> str:
+    def _get_chrome_version_number(self, file_path) -> str:
         try:
             info = win32api.GetFileVersionInfo(file_path, "\\")
             ms = info['FileVersionMS']
