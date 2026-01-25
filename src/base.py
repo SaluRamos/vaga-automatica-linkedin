@@ -1,3 +1,5 @@
+#modules
+from src.utils import is_ollama_running
 #libs
 import tensorflow as tf
 import undetected_chromedriver as uc
@@ -15,6 +17,7 @@ import random
 import time
 import win32api
 import math
+import subprocess
 
 class Bot():
 
@@ -26,6 +29,12 @@ class Bot():
             self._mouse_model = tf.keras.models.load_model(model_path, compile=False)
             self._mx = 0
             self._my = 0
+        if not is_ollama_running():
+            print("starting ollama...")
+            subprocess.Popen(["ollama", "serve"],
+                            stdout=os.devnull,
+                            stderr=os.devnull,
+                            close_fds=True)
     
     def start_driver(self) -> None:
         chrome_exe_path = os.path.join(os.path.join(os.getcwd(), "bin"), "chrome-win64", "chrome.exe")
@@ -37,7 +46,7 @@ class Bot():
         print(f"undetected chrome = '{undetected_chrome_driver_version}'")
         if undetected_chrome_driver_version != chrome_for_testing_version:
             raise Exception("DRIVERS DIFFER!")
-
+        print("versions match!")
         self.driver = uc.Chrome(
             options=self._get_driver_options(),
             browser_executable_path=chrome_exe_path, # chrome com versão fixa na pasta bin
