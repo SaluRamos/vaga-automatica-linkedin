@@ -111,7 +111,7 @@ class Bot():
     def get_profile_path(self) -> str:
         return os.path.join(os.getcwd(), f'profiles/{self.opt["driver"]["profile_name"]}')
 
-    def get_dad(self, elem:webelement.WebElement, levels=1) -> webelement.WebElement:
+    def get_dad(self, elem:webelement.WebElement, levels:int=1) -> webelement.WebElement:
         if levels == 0:
             return elem
         dad = elem.find_element(By.XPATH, "..")
