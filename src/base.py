@@ -139,10 +139,10 @@ class Bot():
     def _create_visual_cursor(self) -> None:
         if self.opt["driver"]["show_cursor"] and not hasattr(self, "cursor_created"):
             self.cursor_created = True
-            self.cursor_uuid = uuid.uuid4()
+            self._cursor_uuid = uuid.uuid4()
             script = f"""
             var cursor = document.createElement('div');
-            cursor.id = '{self.cursor_uuid}';
+            cursor.id = '{self._cursor_uuid}';
             cursor.style.position = 'fixed';
             cursor.style.zIndex = '2147483647';
             cursor.style.width = '12px';
@@ -159,7 +159,7 @@ class Bot():
 
     def _update_visual_cursor(self) -> None:
         script = f"""
-        var cursor = document.getElementById('{self.cursor_uuid}');
+        var cursor = document.getElementById('{self._cursor_uuid}');
         if(cursor) {{
             cursor.style.left = '{self.mx}px';
             cursor.style.top = '{self.my}px';
