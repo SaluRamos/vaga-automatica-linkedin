@@ -38,7 +38,7 @@ class Bot():
             raise Exception("DRIVERS DIFFER!")
 
         self.driver = uc.Chrome(
-            options=self.get_driver_options(),
+            options=self._get_driver_options(),
             browser_executable_path=chrome_exe_path, # chrome com versão fixa na pasta bin
             headless=self.opt["driver"]["headless"], 
             use_subprocess=True
@@ -58,7 +58,7 @@ class Bot():
         except Exception as e:
             return f"Erro ao obter versão: {e}"
 
-    def get_driver_options(self) -> uc.ChromeOptions:
+    def _get_driver_options(self) -> uc.ChromeOptions:
         driver_options = uc.ChromeOptions()
         # Opções que ajudam na ocultação
         driver_options.add_argument("--disable-infobars")
@@ -85,7 +85,7 @@ class Bot():
             driver_options.add_argument("--start-maximized")
         return driver_options
 
-    def wait_for_page_load(self, timeout: int = 10) -> None:
+    def wait_for_page_load(self, timeout:int=10) -> None:
         WebDriverWait(self.driver, timeout).until(
             lambda d: d.execute_script("return document.readyState") == "complete"
         )
