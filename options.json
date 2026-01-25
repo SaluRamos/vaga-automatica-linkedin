@@ -49,6 +49,9 @@
         "director":false,
         "executive":false
     },
+    "indeed":{
+
+    },
     "ai":{
         "model":"gemma3:4b",
         "en_private_info":"My name is John Senna, my cellphone is 1234567890, i am from Xique-Xique, Bahia, Brasil.",
