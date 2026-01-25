@@ -1,6 +1,7 @@
 #modules
 from src.bots.linkedin import LinkedinBot
 from src.bots.robot import RobotBot
+from src.bots.indeed import IndeedBot
 #native libs
 import time
 import ctypes
@@ -22,6 +23,13 @@ def load_options() -> dict:
         with open("options.json", "r", encoding="utf-8") as file:
             opt = json.load(file)
     return opt
+
+def indeed(opt:dict) -> None:
+    bot = IndeedBot(opt)
+    bot.start_driver()
+    bot.subscribe_to_all_jobs()
+    time.sleep(10000000) #dar tempo de debugar
+    bot.driver.quit()
 
 def robot(opt:dict) -> None:
     opt["driver"]["load_profile"] = False
@@ -49,5 +57,7 @@ if __name__ == "__main__":
         main(opt)
     elif opt["actual_bot"] == "robot":
         robot(opt)
+    elif opt["actual_bot"] == "indeed":
+        indeed(opt)
     else:
         raise Exception("No 'actual_bot' config recognized")
